@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
                 valuesShop.remove(i);
                 shopAdapter.notifyDataSetChanged();
                 new SortAndPublish(basketAdapter,valuesBasket,MainActivity.this).execute("");
-                if(TestingAlgorithms.getIfCollapsed(basketButton.getId()) == 1) TestingAlgorithms.expand(basketButton);
+                if(AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1) AnimationAlgorithms.expand(basketButton);
             }
         });
         listViewBasket.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
             }
         });//*/
 
-        TestingAlgorithms.collapse(basketButton); TestingAlgorithms.collapse(listViewBasket);
+        AnimationAlgorithms.collapse(basketButton); AnimationAlgorithms.collapse(listViewBasket);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -105,9 +105,9 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
     public void onClick(View view){
         switch(view.getId()){
             case R.id.basket_button:
-                Log.i("LOG","ifCollapsed " + TestingAlgorithms.getIfCollapsed(view.getId()));
-                if(TestingAlgorithms.getIfCollapsed(listViewBasket.getId()) == 1) TestingAlgorithms.expand(listViewBasket);
-                else if(TestingAlgorithms.getIfCollapsed(listViewBasket.getId())==0) TestingAlgorithms.collapse(listViewBasket);
+                Log.i("LOG","ifCollapsed " + AnimationAlgorithms.getIfCollapsed(view.getId()));
+                if(AnimationAlgorithms.getIfCollapsed(listViewBasket.getId()) == 1) AnimationAlgorithms.expand(listViewBasket);
+                else if(AnimationAlgorithms.getIfCollapsed(listViewBasket.getId())==0) AnimationAlgorithms.collapse(listViewBasket);
                 else Log.i("LOG","Error");
                 break;
             default:
@@ -147,9 +147,9 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
 
     @Override
     public void checkBasket(){
-        if(valuesBasket.isEmpty() && TestingAlgorithms.getIfCollapsed(listViewBasket.getId())==0){
-            TestingAlgorithms.collapse(listViewBasket);
-            TestingAlgorithms.collapse(basketButton);
+        if(valuesBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(listViewBasket.getId())==0){
+            AnimationAlgorithms.collapse(listViewBasket);
+            AnimationAlgorithms.collapse(basketButton);
         }
     }
 }

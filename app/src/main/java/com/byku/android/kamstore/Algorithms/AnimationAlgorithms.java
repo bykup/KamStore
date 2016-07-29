@@ -11,8 +11,8 @@ import android.view.animation.Transformation;
 /**
  * Created by Byku on 28.07.2016.
  */
-final public class TestingAlgorithms {
-    private TestingAlgorithms(){}
+final public class AnimationAlgorithms {
+    private AnimationAlgorithms(){}
     private static SparseIntArray ifCollapsed = new SparseIntArray();
     private static SparseIntArray viewsDimensions = new SparseIntArray();
     private static boolean isCollapsed;
