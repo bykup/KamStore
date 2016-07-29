@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
     ArrayList<String> valuesBasket;
 
 
-    String[] strings = new String[]{"a", "b", "c", "d", "e", "f", "g",
+    String[] strings = new String[]{"a", "b", "cc", "d", "e", "f", "g",
             "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
             "t", "u", "w", "x", "y", "z"};
 
