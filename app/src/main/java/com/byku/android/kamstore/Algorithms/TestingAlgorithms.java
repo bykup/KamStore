@@ -28,14 +28,6 @@ final public class TestingAlgorithms {
         v.setVisibility(View.VISIBLE);
         Animation a = new Animation()
         {
-            /*@Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                v.getLayoutParams().height = interpolatedTime == 1
-                        ? ViewGroup.LayoutParams.WRAP_CONTENT
-                        : (int)(targetHeight * interpolatedTime);
-                Log.i("LOG","height: " + v.getLayoutParams().height);
-                v.requestLayout();
-            }//*/
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 v.getLayoutParams().height = targetHeight == 1 ? -2 : (int)(targetHeight * interpolatedTime);
