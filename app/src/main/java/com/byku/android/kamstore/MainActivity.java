@@ -3,6 +3,8 @@ package com.byku.android.kamstore;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,9 +30,9 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
     private ListView listViewShop;
     private ListView listViewBasket;
     private Button basketButton;
-    private ArrayAdapter shopAdapter;
-    private ArrayAdapter basketAdapter;
-    private EditText editText;
+    private ArrayAdapter<String> shopAdapter;
+    private ArrayAdapter<String> basketAdapter;
+    private EditText inputSearch;
     ArrayList<String> valuesShop;
     ArrayList<String> valuesBasket;
 
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         listViewShop = (ListView) findViewById(R.id.store_list);
         listViewBasket = (ListView) findViewById(R.id.basket_list);
         basketButton = (Button) findViewById(R.id.basket_button);
-        editText = (EditText) findViewById(R.id.search_bar);
+        inputSearch = (EditText) findViewById(R.id.search_bar);
 
         valuesShop = new ArrayList<String>();
         for(String a : strings){
@@ -81,7 +83,26 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
                 basketAdapter.notifyDataSetChanged();
                 new SortAndPublish(shopAdapter,valuesShop,MainActivity.this).execute("");
             }
-        });//*/
+        });
+
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                MainActivity.this.shopAdapter.getFilter().filter(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                //MainActivity.this.shopAdapter.getFilter().filter("");
+            }
+        });
+
+
 
         AnimationAlgorithms.collapse(basketButton); AnimationAlgorithms.collapse(listViewBasket);
     }
