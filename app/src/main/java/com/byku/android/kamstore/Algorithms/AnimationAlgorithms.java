@@ -15,7 +15,6 @@ final public class AnimationAlgorithms {
     private AnimationAlgorithms(){}
     private static SparseIntArray ifCollapsed = new SparseIntArray();
     private static SparseIntArray viewsDimensions = new SparseIntArray();
-    private static boolean isCollapsed;
 
 
     public static void expand(final View v) {
@@ -44,7 +43,7 @@ final public class AnimationAlgorithms {
         //stores states of views
         ifCollapsed.put(v.getId(),0);
         // 1dp/ms
-        a.setDuration((int)(targetHeight*2 / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration((int)(targetHeight*3 / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
     }
 
@@ -73,7 +72,7 @@ final public class AnimationAlgorithms {
         //stores states of views
         ifCollapsed.put(v.getId(),1);
         // 1dp/ms
-        a.setDuration((int)(initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration((int)(initialHeight*3 / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
     }
 

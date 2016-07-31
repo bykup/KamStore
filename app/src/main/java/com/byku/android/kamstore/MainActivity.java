@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +37,7 @@ import com.byku.android.kamstore.RecView.*;
 public class MainActivity extends AppCompatActivity{
     private RecyclerView recViewShop;
     private RecyclerView recViewBasket;
-    private Button basketButton;
+    private RelativeLayout basketButton;
     private ItemAdapter shopAdapter;
     private ItemAdapter basketAdapter;
     private EditText inputSearch;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         recViewShop = (RecyclerView) findViewById(R.id.store_list);
         recViewBasket = (RecyclerView) findViewById(R.id.basket_list);
-        basketButton = (Button) findViewById(R.id.basket_button);
+        basketButton = (RelativeLayout) findViewById(R.id.basket_button);
         inputSearch = (EditText) findViewById(R.id.search_bar);
 
         shopAdapter = new ItemAdapter(this, itemsShop);
