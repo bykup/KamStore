@@ -29,16 +29,19 @@ import com.byku.android.kamstore.RecView.*;
  * - wyszukiwanie
  * - nagłowek koszyka - aktualizacja z ceną
  * - przechowywanie danych
+ * - nie wrzucanie tych samych produktow
+ * - synchronizacja przy dodawaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
+ * - synchronizacja przy usuwaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
  */
-public class MainActivity extends AppCompatActivity implements BasketQuantity{
+public class MainActivity extends AppCompatActivity{
     private RecyclerView recViewShop;
     private RecyclerView recViewBasket;
     private Button basketButton;
     private ItemAdapter shopAdapter;
     private ItemAdapter basketAdapter;
     private EditText inputSearch;
-    ArrayList<Item> itemsShop = new ArrayList<>();
-    ArrayList<Item> itemsBasket = new ArrayList<>();
+    private ArrayList<Item> itemsShop = new ArrayList<>();
+    private ArrayList<Item> itemsBasket = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +52,12 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         basketButton = (Button) findViewById(R.id.basket_button);
         inputSearch = (EditText) findViewById(R.id.search_bar);
 
-
         shopAdapter = new ItemAdapter(this, itemsShop);
         recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewShop.setAdapter(shopAdapter);
         prepareItemData();
-        
 
         basketAdapter = new ItemAdapter(this, itemsBasket);
         recViewBasket.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -64,19 +65,14 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         recViewBasket.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewBasket.setAdapter(basketAdapter);
 
-
-
         recViewShop.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Item item = itemsShop.get(position);
-                itemsBasket.add(item);
-                itemsShop.remove(position);
-                shopAdapter.notifyDataSetChanged();
-                new SortAndPublish(basketAdapter,itemsBasket,MainActivity.this).execute("");
-                if(AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1) AnimationAlgorithms.expand(basketButton);
+                basketAdapter.addItemSorted(shopAdapter.getItemAtPos(position),MainActivity.this,itemsBasket);
+                itemsShop.remove(itemsShop.indexOf(shopAdapter.getItemAtPos(position)));
+                shopAdapter.removeItem(position);
+                if(AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1) AnimationAlgorithms.expand(basketButton);//*/
             }
-
             @Override
             public void onLongClick(View view, int position) {
 
@@ -86,13 +82,14 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         recViewBasket.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Item item = itemsBasket.get(position);
-                itemsShop.add(item);
-                itemsBasket.remove(position);
-                basketAdapter.notifyDataSetChanged();
-                new SortAndPublish(shopAdapter,itemsShop,MainActivity.this).execute("");
+                shopAdapter.addItemSorted(basketAdapter.getItemAtPos(position),MainActivity.this,itemsShop);
+                itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
+                basketAdapter.removeItem(position);
+                if(itemsBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(recViewBasket.getId())==0){
+                    AnimationAlgorithms.collapse(recViewBasket);
+                    AnimationAlgorithms.collapse(basketButton);
+                }
             }
-
             @Override
             public void onLongClick(View view, int position) {
 
@@ -107,9 +104,9 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                final ArrayList<Item> filteredShopList = FilterAlgorithm.filter(itemsShop, charSequence);
+                ArrayList<Item> filteredShopList = FilterAlgorithm.filter(itemsShop, charSequence);
                 shopAdapter.animateTo(filteredShopList);
-                recViewShop.scrollToPosition(0);
+                //recViewShop.scrollToPosition(0);
             }
 
             @Override
@@ -130,9 +127,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.test:
-                //Log.i("LOG:", "KLAWISZ: " + shopAdapter.getCount());
-                //improve detection of suspicious keys
-                //if(TestingAlgorithms.getIfCollapsed(item.getItemId()) == 0) TestingAlgorithms.expand(basketButton);
+                shopAdapter.addItemSorted(new Item("ZG","test","222"),MainActivity.this,itemsShop);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -196,12 +191,11 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
     private class SortAndPublish extends AsyncTask<String, String, String> {
         ItemAdapter adapter;
         ArrayList<Item> list;
-        BasketQuantity bq;
 
-        SortAndPublish(ItemAdapter adapter, ArrayList<Item> list,BasketQuantity bq){
+        SortAndPublish(ItemAdapter adapter, ArrayList<Item> list){
             this.adapter = adapter;
             this.list = list;
-            this.bq = bq;
+
         }
         @Override
         protected void onPreExecute() {
@@ -210,75 +204,63 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         @Override
         protected String doInBackground(String... args) {
             Log.i("LOG","doInBackground");
-            Collections.sort(list);
             return null;
         }
         @Override
         protected void onPostExecute(String result) {
             Log.i("LOG","onPostExecute");
-            bq.checkBasket();
-            adapter.notifyDataSetChanged();
+
         }
     }
-
-    @Override
-    public void checkBasket(){
-        if(itemsBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(recViewBasket.getId())==0){
-            AnimationAlgorithms.collapse(recViewBasket);
-            AnimationAlgorithms.collapse(basketButton);
-        }
-    }
-
 
     private void prepareItemData() {
         Item item = new Item("Mad Max: Fury Road", "Action & Adventure", "2015");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Inside Out", "Animation, Kids & Family", "2015");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Star Wars: Episode VII - The Force Awakens", "Action", "2015");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Shaun the Sheep", "Animation", "2015");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("The Martian", "Science Fiction & Fantasy", "2015");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Mission: Impossible Rogue Nation", "Action", "2015");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Up", "Animation", "2009");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Star Trek", "Science Fiction", "2009");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("The LEGO Item", "Animation", "2014");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Iron Man", "Action & Adventure", "2008");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Aliens", "Science Fiction", "1986");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Chicken Run", "Animation", "2000");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Back to the Future", "Science Fiction", "1985");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Raiders of the Lost Ark", "Action & Adventure", "1981");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Goldfinger", "Action & Adventure", "1965");
-        itemsShop.add(item);
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
         item = new Item("Guardians of the Galaxy", "Science Fiction & Fantasy", "2014");
-        itemsShop.add(item);
-        new SortAndPublish(shopAdapter,itemsShop,MainActivity.this).execute("");
+        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
     }
 
 }

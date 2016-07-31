@@ -22,7 +22,7 @@ final public class AnimationAlgorithms {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         //final int targetHeight = v.getMeasuredHeight();
         final int targetHeight = viewsDimensions.get(v.getId())<1 ? 1 : viewsDimensions.get(v.getId());
-        Log.i("LOG","Wys expand " + targetHeight);
+        //Log.i("LOG","Wys expand " + targetHeight);
         // Older versions of android (pre API 21) cancel animations for views with a height of 0.
         v.getLayoutParams().height = 1;
         v.setVisibility(View.VISIBLE);
@@ -31,7 +31,7 @@ final public class AnimationAlgorithms {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 v.getLayoutParams().height = targetHeight == 1 ? -2 : (int)(targetHeight * interpolatedTime);
-                Log.i("LOG","height: " + v.getLayoutParams().height + ", float" + interpolatedTime);
+                //Log.i("LOG","height: " + v.getLayoutParams().height + ", float" + interpolatedTime);
                 v.requestLayout();
             }
 

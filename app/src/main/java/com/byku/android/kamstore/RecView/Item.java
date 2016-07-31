@@ -21,6 +21,7 @@ public class Item implements Comparable<Item>{
     public void setDesc(String desc){this.desc = desc;}
     public void setCost(String cost){this.cost = cost;}
 
+    @Override
     public boolean equals(Object object){
         if(!(object instanceof Item))
             return false;
