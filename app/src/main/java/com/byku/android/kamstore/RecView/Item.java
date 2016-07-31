@@ -1,8 +1,6 @@
 package com.byku.android.kamstore.RecView;
 
-/**
- * Created by Byku on 30.07.2016.
- */
+
 public class Item implements Comparable<Item>{
     private final String name;
     private String desc, cost;

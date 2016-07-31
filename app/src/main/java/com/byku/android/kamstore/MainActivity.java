@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.Touch;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -17,12 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,18 +50,16 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         inputSearch = (EditText) findViewById(R.id.search_bar);
 
 
-        shopAdapter = new ItemAdapter(itemsShop);
-        RecyclerView.LayoutManager shopLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recViewShop.setLayoutManager(shopLayoutManager);
+        shopAdapter = new ItemAdapter(this, itemsShop);
+        recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewShop.setAdapter(shopAdapter);
         prepareItemData();
         
 
-        basketAdapter = new ItemAdapter(itemsBasket);
-        RecyclerView.LayoutManager basketLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recViewBasket.setLayoutManager(basketLayoutManager);
+        basketAdapter = new ItemAdapter(this, itemsBasket);
+        recViewBasket.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewBasket.setItemAnimator(new DefaultItemAnimator());
         recViewBasket.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewBasket.setAdapter(basketAdapter);
@@ -88,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
             public void onLongClick(View view, int position) {
 
             }
-        }));//*/
+        }));
 
         recViewBasket.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
@@ -104,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
             public void onLongClick(View view, int position) {
 
             }
-        }));
+        }));//*/
 
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -114,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                final ArrayList<Item> filteredShopList = FilterAlgorithm.filter(itemsShop, charSequence);
+                shopAdapter.animateTo(filteredShopList);
+                recViewShop.scrollToPosition(0);
             }
 
             @Override
@@ -196,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements BasketQuantity{
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept){
             //nothing
         }
-
     }
 
     private class SortAndPublish extends AsyncTask<String, String, String> {
