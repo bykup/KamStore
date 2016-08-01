@@ -25,7 +25,6 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration{
 
     //constructor(interface to global information, orientation of screen
     public DividerItemDecoration(Context context, int orientation){
-        Log.i("Log: ","DividerItemDecoration: In constructor.");
         //obtainStyledAttributes - returns TypedArray - holding the values defined
         // by Theme which are listed in attrs.
         final TypedArray a = context.obtainStyledAttributes(ATTRS);
@@ -35,7 +34,6 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration{
     }
 
     public void setOrientation(int orientation){
-        Log.i("Log: ","DividerItemDecoration: In setOrientation.");
         if(orientation != HORIZONTAL_LIST && orientation != VERTICAL_LIST){
             throw new IllegalArgumentException("invalid orientation");
         }
@@ -47,7 +45,6 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration{
         //c 	Canvas: Canvas to draw into
         //parent 	RecyclerView: RecyclerView this ItemDecoration is drawing into
         //state 	RecyclerView.State: The current state of RecyclerView.
-        Log.i("Log: ","DividerItemDecoration: In onDrawOver.");
         if(mOrientation==VERTICAL_LIST){
             drawVertical(c,parent);
         }else{
@@ -56,19 +53,14 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration{
     }
 
     public void drawVertical(Canvas c, RecyclerView parent){
-        Log.i("Log: ","DividerItemDecoration: In drawVertiacal.");
         final int left = parent.getPaddingLeft();
-        Log.i("Log: ","DividerItemDecoration: Left padding: " + Integer.toString(left));
         final int right = parent.getWidth() - parent.getPaddingRight();
-        Log.i("Log: ","DividerItemDecoration: Right padding: " + Integer.toString(right) + " so, parent.width:" + Integer.toString(parent.getWidth()) + " - " + Integer.toString(parent.getPaddingRight()));
         final int childCount = parent.getChildCount(); //returns amount of VISIBLE children
-        Log.i("Log: ","DividerItemDecoration: childCount: " + Integer.toString(childCount));
         for(int i = 0; i< childCount;i++){
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int top = child.getBottom() + params.bottomMargin;
             final int bottom = top + mDivider.getIntrinsicHeight();
-            Log.i("Log: ","DividerItemDecoration: top:" + Integer.toString(top)+", bottom: " + Integer.toString(bottom));
             //setBounds - sets bounds for a square it draws
             mDivider.setBounds(left,top,right,bottom);
             //draws that square
@@ -98,9 +90,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration{
     If this ItemDecoration does not affect the positioning of item views, it should set all
     four fields of outRect (left, top, right, bottom) to zero before returning. */
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state){
-        Log.i("Log: ","DividerItemDecoration: In getItemOffsets.");
         if(mOrientation==VERTICAL_LIST){
-            Log.i("Log: ","DividerItemDecoration: getIntrisinsicHeight: " + Integer.toString(mDivider.getIntrinsicHeight()));
             //getIntrisicHeight - get's "real" height of mDivider
             outRect.set(0,0,0, mDivider.getIntrinsicHeight());
         }else{

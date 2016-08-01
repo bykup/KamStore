@@ -7,30 +7,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.byku.android.kamstore.R;
 
 import java.util.ArrayList;
 
-public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
+public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHolder>{
     private final LayoutInflater itemInfalter;
     private ArrayList<Item> itemsList;
     private Context context;
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
+        public ImageButton del;
         public MyViewHolder(View view){
             super(view);
-            name = (TextView) view.findViewById(R.id.shop_name);
-            desc = (TextView) view.findViewById(R.id.shop_desc);
-            cost = (TextView) view.findViewById(R.id.shop_price);
+            name = (TextView) view.findViewById(R.id.basket_name);
+            desc = (TextView) view.findViewById(R.id.basket_desc);
+            cost = (TextView) view.findViewById(R.id.basket_price);
+            del = (ImageButton) view.findViewById(R.id.basket_delete);
         }
     }
 
-    public ItemAdapter(Context context, ArrayList<Item> itemsList){
+    public BasketAdapter(Context context, ArrayList<Item> itemsList){
         itemInfalter = LayoutInflater.from(context);
         this.itemsList = new ArrayList<Item>(itemsList);
         this.context = context;
@@ -39,7 +42,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         Log.i("LOG:","PARENT ID" + parent.getId());
-        final View itemView = itemInfalter.inflate(R.layout.shop_items,parent,false);
+        final View itemView = itemInfalter.inflate(R.layout.basket_items,parent,false);
         return new MyViewHolder(itemView);
     }
 
@@ -50,13 +53,19 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         holder.name.setText(item.getName());
         holder.desc.setText(item.getDesc());
         holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
+        holder.del.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+
+            }
+        });
+
     }
 
     @Override
     public int getItemCount(){
         return itemsList.size();
     }
-
 
     public Item getItemAtPos(int position){
         return itemsList.get(position);
@@ -82,7 +91,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
     }
 
     private void applyAndAnimateAdditions(ArrayList<Item> items) {
-        Log.i("LOG:","addItem aaaa" + items.size() + " " + itemsList.size());
         for (int i = 0, count = items.size(); i < count; i++) {
             final Item item = items.get(i);
             if (!itemsList.contains(item)) {
@@ -90,18 +98,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
             }
         }
     }
-    //optimize!
-    /**
-     * - baza sqlite
-     * - wyszukiwanie
-     * - nagłowek koszyka - aktualizacja z ceną
-     * - przechowywanie danych
-     * - synchronizacja przy dodawaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
-     * - synchronizacja przy usuwaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
-     */
     public int addItemSorted(Item item, Activity mainActivity,ArrayList<Item> sourceArray){
         int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
-        Log.i("LOG","addItemSorted " + item + " " + itemsSourceSize + " " + itemsListSize);
         if(sourceArray.contains(item)){
             Toast.makeText(mainActivity, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
             return -2;

@@ -12,25 +12,38 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/shop_name"
+        android:id="@+id/basket_name"
         android:textColor="@color/name"
         android:textSize="16sp"
         android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="TEST"/>
 
     <TextView
-        android:id="@+id/shop_desc"
-        android:layout_below="@id/shop_name"
+        android:id="@+id/basket_desc"
+        android:layout_below="@id/basket_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="TEST"/>
 
     <TextView
-        android:id="@+id/shop_price"
+        android:id="@+id/basket_price"
         android:textColor="@color/price"
         android:layout_width="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="TEST"/>
+
+    <ImageButton
+        android:id="@+id/basket_delete"
+        android:clickable="true"
+        android:src="@drawable/ic_close_black_24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/basket_price"
+        android:background="#c3c5ff" />
 
 </RelativeLayout>

@@ -16,12 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import com.byku.android.kamstore.Algorithms.*;
 import com.byku.android.kamstore.RecView.*;
@@ -38,9 +37,11 @@ public class MainActivity extends AppCompatActivity{
     private RecyclerView recViewShop;
     private RecyclerView recViewBasket;
     private RelativeLayout basketButton;
-    private ItemAdapter shopAdapter;
-    private ItemAdapter basketAdapter;
+    private ItemAdapter shopAdapter; //stworzyć klasę abstrakcyjną matczyną
+    private BasketAdapter basketAdapter;
     private EditText inputSearch;
+    private TextView basketStatus;
+    private TextView basketQuantity;
     private ArrayList<Item> itemsShop = new ArrayList<>();
     private ArrayList<Item> itemsBasket = new ArrayList<>();
 
@@ -52,19 +53,23 @@ public class MainActivity extends AppCompatActivity{
         recViewBasket = (RecyclerView) findViewById(R.id.basket_list);
         basketButton = (RelativeLayout) findViewById(R.id.basket_button);
         inputSearch = (EditText) findViewById(R.id.search_bar);
+        basketStatus = (TextView) findViewById(R.id.basket_status);
+        basketQuantity = (TextView) findViewById(R.id.basket_quantity);
 
         shopAdapter = new ItemAdapter(this, itemsShop);
         recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewShop.setAdapter(shopAdapter);
+        recViewShop.setHasFixedSize(true);
         prepareItemData();
 
-        basketAdapter = new ItemAdapter(this, itemsBasket);
+        basketAdapter = new BasketAdapter(this, itemsBasket);
         recViewBasket.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewBasket.setItemAnimator(new DefaultItemAnimator());
         recViewBasket.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewBasket.setAdapter(basketAdapter);
+        recViewBasket.setHasFixedSize(true);
 
         recViewShop.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
@@ -72,6 +77,8 @@ public class MainActivity extends AppCompatActivity{
                 basketAdapter.addItemSorted(shopAdapter.getItemAtPos(position),MainActivity.this,itemsBasket);
                 itemsShop.remove(itemsShop.indexOf(shopAdapter.getItemAtPos(position)));
                 shopAdapter.removeItem(position);
+                basketQuantity.setText("" + itemsBasket.size());
+                basketStatus.setText(""+ basketAdapter.getTotalCost() + " zł");
                 if(AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1) AnimationAlgorithms.expand(basketButton);//*/
             }
             @Override
@@ -79,13 +86,14 @@ public class MainActivity extends AppCompatActivity{
 
             }
         }));
-
         recViewBasket.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 shopAdapter.addItemSorted(basketAdapter.getItemAtPos(position),MainActivity.this,itemsShop);
                 itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
                 basketAdapter.removeItem(position);
+                basketQuantity.setText("" + itemsBasket.size());
+                basketStatus.setText(""+ basketAdapter.getTotalCost() + " zł");
                 if(itemsBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(recViewBasket.getId())==0){
                     AnimationAlgorithms.collapse(recViewBasket);
                     AnimationAlgorithms.collapse(basketButton);
@@ -100,7 +108,6 @@ public class MainActivity extends AppCompatActivity{
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -112,7 +119,6 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -128,7 +134,7 @@ public class MainActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.test:
-                shopAdapter.addItemSorted(new Item("ZG","test","222"),MainActivity.this,itemsShop);
+                shopAdapter.addItemSorted(new Item("ZG","test",222),MainActivity.this,itemsShop);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -136,10 +142,8 @@ public class MainActivity extends AppCompatActivity{
     public void onClick(View view){
         switch(view.getId()){
             case R.id.basket_button:
-                Log.i("LOG","ifCollapsed " + AnimationAlgorithms.getIfCollapsed(view.getId()));
                 if(AnimationAlgorithms.getIfCollapsed(recViewBasket.getId()) == 1) AnimationAlgorithms.expand(recViewBasket);
                 else if(AnimationAlgorithms.getIfCollapsed(recViewBasket.getId())==0) AnimationAlgorithms.collapse(recViewBasket);
-                else Log.i("LOG","Error");
                 break;
             default:
                 Log.i("LOG","Button not programmed");
@@ -215,52 +219,52 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void prepareItemData() {
-        Item item = new Item("Mad Max: Fury Road", "Action & Adventure", "2015");
+        Item item = new Item("Mad Max: Fury Road", "Action & Adventure", 2015);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Inside Out", "Animation, Kids & Family", "2015");
+        item = new Item("Inside Out", "Animation, Kids & Family", 2015);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Star Wars: Episode VII - The Force Awakens", "Action", "2015");
+        item = new Item("Star Wars: Episode VII - The Force Awakens", "Action", 2015);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Shaun the Sheep", "Animation", "2015");
+        item = new Item("Shaun the Sheep", "Animation", 2015);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("The Martian", "Science Fiction & Fantasy", "2015");
+        item = new Item("The Martian", "Science Fiction & Fantasy", 2015);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Mission: Impossible Rogue Nation", "Action", "2015");
+        item = new Item("Mission: Impossible Rogue Nation", "Action", 2015);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Up", "Animation", "2009");
+        item = new Item("Up", "Animation", 2009);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Star Trek", "Science Fiction", "2009");
+        item = new Item("Star Trek", "Science Fiction", 2009);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("The LEGO Item", "Animation", "2014");
+        item = new Item("The LEGO Item", "Animation", 2014);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Iron Man", "Action & Adventure", "2008");
+        item = new Item("Iron Man", "Action & Adventure", 2008);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Aliens", "Science Fiction", "1986");
+        item = new Item("Aliens", "Science Fiction", 198);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Chicken Run", "Animation", "2000");
+        item = new Item("Chicken Run", "Animation", 2000);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Back to the Future", "Science Fiction", "1985");
+        item = new Item("Back to the Future", "Science Fiction", 1985);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Raiders of the Lost Ark", "Action & Adventure", "1981");
+        item = new Item("Raiders of the Lost Ark", "Action & Adventure", 1981);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Goldfinger", "Action & Adventure", "1965");
+        item = new Item("Goldfinger", "Action & Adventure", 1965);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
 
-        item = new Item("Guardians of the Galaxy", "Science Fiction & Fantasy", "2014");
+        item = new Item("Guardians of the Galaxy", "Science Fiction & Fantasy", 2014);
         shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
     }
 
