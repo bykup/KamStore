@@ -14,7 +14,7 @@ import com.byku.android.kamstore.R;
 
 import java.util.ArrayList;
 
-public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
+public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
     private final LayoutInflater itemInfalter;
     private ArrayList<Item> itemsList;
     private Context context;
@@ -29,7 +29,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         }
     }
 
-    public ItemAdapter(Context context, ArrayList<Item> itemsList){
+    public ShopAdapter(Context context, ArrayList<Item> itemsList){
         itemInfalter = LayoutInflater.from(context);
         this.itemsList = new ArrayList<Item>(itemsList);
         this.context = context;

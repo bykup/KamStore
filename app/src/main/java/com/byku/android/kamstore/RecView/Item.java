@@ -2,6 +2,7 @@ package com.byku.android.kamstore.RecView;
 
 
 public class Item implements Comparable<Item>{
+    private long id;
     private final String name;
     private String desc;
     private double cost;
@@ -16,11 +17,22 @@ public class Item implements Comparable<Item>{
         this.desc = desc;
         this.cost = cost;
     }
+    public Item(Long id, String name, String desc, double cost){
+        if(name == null || desc == null)
+            throw new NullPointerException();
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+        this.cost = cost;
+    }
+
     public String getName(){return name;}
     public String getDesc(){return desc;}
     public double getCost(){return cost;}
+    public long getId(){return id;}
     public void setDesc(String desc){this.desc = desc;}
     public void setCost(double cost){this.cost = cost;}
+
 
     @Override
     public boolean equals(Object object){

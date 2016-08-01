@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity{
     private RecyclerView recViewShop;
     private RecyclerView recViewBasket;
     private RelativeLayout basketButton;
-    private ItemAdapter shopAdapter; //stworzyć klasę abstrakcyjną matczyną
+    private ShopAdapter shopAdapter;
     private BasketAdapter basketAdapter;
     private EditText inputSearch;
     private TextView basketStatus;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity{
         basketStatus = (TextView) findViewById(R.id.basket_status);
         basketQuantity = (TextView) findViewById(R.id.basket_quantity);
 
-        shopAdapter = new ItemAdapter(this, itemsShop);
+        shopAdapter = new ShopAdapter(this, itemsShop);
         recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity{
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 ArrayList<Item> filteredShopList = FilterAlgorithm.filter(itemsShop, charSequence);
                 shopAdapter.animateTo(filteredShopList);
-                //recViewShop.scrollToPosition(0);
+                recViewShop.scrollToPosition(0);
             }
 
             @Override
@@ -191,10 +191,10 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private class SortAndPublish extends AsyncTask<String, String, String> {
-        ItemAdapter adapter;
+        ShopAdapter adapter;
         ArrayList<Item> list;
 
-        SortAndPublish(ItemAdapter adapter, ArrayList<Item> list){
+        SortAndPublish(ShopAdapter adapter, ArrayList<Item> list){
             this.adapter = adapter;
             this.list = list;
 

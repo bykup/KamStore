@@ -1,4 +1,4 @@
-package com.byku.android.kamstore.RecView;
+package com.byku.android.kamstore.RecView.Abstract;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,50 +6,31 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.byku.android.kamstore.R;
+import com.byku.android.kamstore.RecView.Item;
 
 import java.util.ArrayList;
-
-public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHolder>{
+//PRZEROBIC aby reszta klas dziedziczyła po tej
+abstract public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
     private final LayoutInflater itemInfalter;
     private ArrayList<Item> itemsList;
     private Context context;
 
-    private static OnItemClickListener listener;
-    public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
-    }
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
-
-
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
-        public TextView del;
         public MyViewHolder(View view){
             super(view);
-            name = (TextView) view.findViewById(R.id.basket_name);
-            desc = (TextView) view.findViewById(R.id.basket_desc);
-            cost = (TextView) view.findViewById(R.id.basket_price);
-            del = (TextView) view.findViewById(R.id.basket_delete);
-
-            del.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Triggers click upwards to the adapter on click
-                    if (listener != null)
-                        listener.onItemClick(itemView, getLayoutPosition());
-                }
-            });
+            name = (TextView) view.findViewById(R.id.shop_name);
+            desc = (TextView) view.findViewById(R.id.shop_desc);
+            cost = (TextView) view.findViewById(R.id.shop_price);
         }
     }
 
-    public BasketAdapter(Context context, ArrayList<Item> itemsList){
+    public ItemAdapter(Context context, ArrayList<Item> itemsList){
         itemInfalter = LayoutInflater.from(context);
         this.itemsList = new ArrayList<Item>(itemsList);
         this.context = context;
@@ -57,7 +38,7 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        final View itemView = itemInfalter.inflate(R.layout.basket_items,parent,false);
+        final View itemView = itemInfalter.inflate(R.layout.shop_items,parent,false);
         return new MyViewHolder(itemView);
     }
 
@@ -68,13 +49,13 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         holder.name.setText(item.getName());
         holder.desc.setText(item.getDesc());
         holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
-
     }
 
     @Override
     public int getItemCount(){
         return itemsList.size();
     }
+
 
     public Item getItemAtPos(int position){
         return itemsList.get(position);
@@ -107,6 +88,15 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
             }
         }
     }
+    //optimize!
+    /**
+     * - baza sqlite
+     * - wyszukiwanie
+     * - nagłowek koszyka - aktualizacja z ceną
+     * - przechowywanie danych
+     * - synchronizacja przy dodawaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
+     * - synchronizacja przy usuwaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
+     */
     public int addItemSorted(Item item, Activity mainActivity,ArrayList<Item> sourceArray){
         int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
         if(sourceArray.contains(item)){
@@ -115,11 +105,9 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         }
         while(j <= itemsSourceSize){
             if(j != itemsSourceSize && sourceArray.get(j).compareTo(item) > 0) {
-                //Log.i("Log:","addSourceArray if " + item + " " + j);
                 sourceArray.add(j, item);
                 break;
             } else if(j==itemsSourceSize){
-                //Log.i("Log:","addSourceArray if else " + item + " " + j);
                 sourceArray.add(item);
                 break;
             }
@@ -127,7 +115,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         }
         while(i <= itemsListSize){
             if(i != itemsListSize && itemsList.get(i).compareTo(item) > 0) {
-                //Log.i("Log:","addItemSorted " + itemsList.get(i) + " " + item + " " + itemsList.get(i).compareTo(item));
                 itemsList.add(i, item);
                 notifyItemInserted(i);
                 return i;
