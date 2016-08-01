@@ -3,11 +3,9 @@ package com.byku.android.kamstore.RecView;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +19,15 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
     private ArrayList<Item> itemsList;
     private Context context;
 
+    private static OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onItemClick(View itemView, int position);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
         public ImageButton del;
@@ -30,6 +37,15 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
             desc = (TextView) view.findViewById(R.id.basket_desc);
             cost = (TextView) view.findViewById(R.id.basket_price);
             del = (ImageButton) view.findViewById(R.id.basket_delete);
+
+            del.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (listener != null)
+                        listener.onItemClick(itemView, getLayoutPosition());
+                }
+            });
         }
     }
 
@@ -41,7 +57,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        Log.i("LOG:","PARENT ID" + parent.getId());
         final View itemView = itemInfalter.inflate(R.layout.basket_items,parent,false);
         return new MyViewHolder(itemView);
     }
@@ -53,12 +68,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         holder.name.setText(item.getName());
         holder.desc.setText(item.getDesc());
         holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
-        holder.del.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-
-            }
-        });
 
     }
 
@@ -132,7 +141,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         return -1;
     }
     private void addItem(int position, Item item) {
-        Log.i("LOG:","addItem " + position + " " + itemsList.size());
         itemsList.add(position, item);
         notifyItemInserted(position);
     }

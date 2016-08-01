@@ -38,7 +38,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        Log.i("LOG:","PARENT ID" + parent.getId());
         final View itemView = itemInfalter.inflate(R.layout.shop_items,parent,false);
         return new MyViewHolder(itemView);
     }
@@ -82,7 +81,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
     }
 
     private void applyAndAnimateAdditions(ArrayList<Item> items) {
-        Log.i("LOG:","addItem aaaa" + items.size() + " " + itemsList.size());
         for (int i = 0, count = items.size(); i < count; i++) {
             final Item item = items.get(i);
             if (!itemsList.contains(item)) {
@@ -101,18 +99,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
      */
     public int addItemSorted(Item item, Activity mainActivity,ArrayList<Item> sourceArray){
         int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
-        Log.i("LOG","addItemSorted " + item + " " + itemsSourceSize + " " + itemsListSize);
         if(sourceArray.contains(item)){
             Toast.makeText(mainActivity, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
             return -2;
         }
         while(j <= itemsSourceSize){
             if(j != itemsSourceSize && sourceArray.get(j).compareTo(item) > 0) {
-                //Log.i("Log:","addSourceArray if " + item + " " + j);
                 sourceArray.add(j, item);
                 break;
             } else if(j==itemsSourceSize){
-                //Log.i("Log:","addSourceArray if else " + item + " " + j);
                 sourceArray.add(item);
                 break;
             }
@@ -120,7 +115,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         }
         while(i <= itemsListSize){
             if(i != itemsListSize && itemsList.get(i).compareTo(item) > 0) {
-                //Log.i("Log:","addItemSorted " + itemsList.get(i) + " " + item + " " + itemsList.get(i).compareTo(item));
                 itemsList.add(i, item);
                 notifyItemInserted(i);
                 return i;
@@ -134,7 +128,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
         return -1;
     }
     private void addItem(int position, Item item) {
-        Log.i("LOG:","addItem " + position + " " + itemsList.size());
         itemsList.add(position, item);
         notifyItemInserted(position);
     }

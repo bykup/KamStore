@@ -10,8 +10,7 @@ import java.util.ArrayList;
  * Created by Byku on 30.07.2016.
  */
 public class FilterAlgorithm {
-    private FilterAlgorithm(){};
-
+    private FilterAlgorithm(){}
 
     public static ArrayList<Item> filter(ArrayList<Item> list,CharSequence cs){
         cs = cs.toString().toLowerCase();

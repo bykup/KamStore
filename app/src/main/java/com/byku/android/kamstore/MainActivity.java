@@ -86,9 +86,10 @@ public class MainActivity extends AppCompatActivity{
 
             }
         }));
-        recViewBasket.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
+
+        basketAdapter.setOnItemClickListener(new BasketAdapter.OnItemClickListener(){
             @Override
-            public void onClick(View view, int position) {
+            public void onItemClick(View view, int position){
                 shopAdapter.addItemSorted(basketAdapter.getItemAtPos(position),MainActivity.this,itemsShop);
                 itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
                 basketAdapter.removeItem(position);
@@ -99,11 +100,7 @@ public class MainActivity extends AppCompatActivity{
                     AnimationAlgorithms.collapse(basketButton);
                 }
             }
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));//*/
+        });
 
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -146,7 +143,7 @@ public class MainActivity extends AppCompatActivity{
                 else if(AnimationAlgorithms.getIfCollapsed(recViewBasket.getId())==0) AnimationAlgorithms.collapse(recViewBasket);
                 break;
             default:
-                Log.i("LOG","Button not programmed");
+                break;
         }
     }
 
