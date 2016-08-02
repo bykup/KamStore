@@ -21,14 +21,16 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
     private ArrayList<Item> itemsList;
     private Context context;
     private boolean ifRemoving = false;
-
-    private static OnItemClickListener listener;
-    public interface OnItemClickListener {
-        void onItemClick(View itemView, int position);
-    }
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
+    /**
+     * ifRemoving - protects the base from removing more than one item at a time, used in:
+     * {@link #removeItemAnimated(View, int)}
+     */
+    private OnItemClickListener listener;
+    /**
+     * OnItemClickListener used to detect click on del(TextView)
+     */
+    public interface OnItemClickListener { void onItemClick(View itemView, int position); }
+    public void setOnItemClickListener(OnItemClickListener listener) { this.listener = listener; }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
@@ -45,7 +47,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
             del.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Triggers click upwards to the adapter on click
                     if (listener != null)
                         listener.onItemClick(itemView, getLayoutPosition());
                 }
@@ -69,9 +70,7 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
     }
 
     @Override
-    public void onViewDetachedFromWindow(final BasketAdapter.MyViewHolder holder){
-        holder.relativeLayout.clearAnimation();
-    }
+    public void onViewDetachedFromWindow(final BasketAdapter.MyViewHolder holder){ holder.relativeLayout.clearAnimation(); }
 
     public BasketAdapter(Context context, ArrayList<Item> itemsList){
         itemInfalter = LayoutInflater.from(context);
@@ -145,6 +144,7 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
                 public void onAnimationEnd(Animation animation) {
                     itemsList.remove(position);
                     notifyItemRemoved(position);
+                    view.setClickable(true);
                     ifRemoving = false;
                 }
 
@@ -192,11 +192,4 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         itemsList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
     }
-
-
-
-
-
-
-
 }

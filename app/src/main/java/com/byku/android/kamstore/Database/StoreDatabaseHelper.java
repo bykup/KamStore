@@ -27,6 +27,12 @@ public class StoreDatabaseHelper extends SQLiteOpenHelper {
         database.execSQL(DATABASE_CREATE);
     }
 
+    /**
+     * Destroys current database and creates it anew.
+     * Decided that, as we won't be saving to database frequently(only once), it is pointless to
+     * create kind of "sophisticated" synchronization algorithm ;]
+     * @param db - database which we want to reinitialize with new data
+     */
     public void onNewData(SQLiteDatabase db){
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_STORE);
         onCreate(db);

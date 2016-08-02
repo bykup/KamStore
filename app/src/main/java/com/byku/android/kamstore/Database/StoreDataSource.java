@@ -11,6 +11,9 @@ import com.byku.android.kamstore.recview.Item;
 import java.util.ArrayList;
 
 public class StoreDataSource {
+    /**
+     * Singleton
+     */
     private static StoreDataSource instance;
     private SQLiteDatabase database;
     private StoreDatabaseHelper dbHelper;
@@ -32,7 +35,16 @@ public class StoreDataSource {
         return instance;
     }
 
-    public static StoreDataSource getStoreDataSource(){
+    /**
+     * At the beginning it was a good idea, but after some(v.little) though it is useless, but i've left
+     * it here just to... well...use exceptions
+     * @return StoreDataSource
+     * @throws NullPointerException
+     */
+    public static StoreDataSource getStoreDataSource() throws NullPointerException{
+        if(instance == null){
+            throw new NullPointerException("Instance not initialized");
+        }
         return instance;
     }
 

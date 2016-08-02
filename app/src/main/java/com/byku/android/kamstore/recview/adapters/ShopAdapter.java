@@ -21,6 +21,10 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
     private final LayoutInflater itemInfalter;
     private ArrayList<Item> itemsList;
     private Context context;
+    /**
+     * ifRemoving - protects the base from removing more than one item at a time, used in:
+     * {@link #removeItemAnimated(View, int)}
+     */
     private boolean ifRemoving = false;
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -89,7 +93,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         for (int i = 0, count = items.size(); i < count; i++) {
             final Item item = items.get(i);
             if (!itemsList.contains(item)) {
-                addItem(i, item);
+                addItemUnsorted(i, item);
             }
         }
     }
@@ -165,7 +169,22 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         }
         return -1;
     }
-    private void addItem(int position, Item item) {
+    //Eksperyment
+    /*private int getPositionSorted(ArrayList<Item> items, int left, int right, Item item) {
+        if(left == right){
+            int temp = items.get(left).compareTo(item);
+            if(temp == 0) return -1;
+            else if(temp < 0) return right + 1;
+            else return right;
+        }
+        if(items.get(left+(right-left)/2).compareTo(item) < 0){
+            return getPositionSorted(items,left+(right-left)/2+1,right,item);
+        }else if(items.get(left+(right-left)/2).compareTo(item) > 0) {
+            return getPositionSorted(items,left,left+(right-left)/2,item);
+        }else return -1;
+    }//*/
+
+    private void addItemUnsorted(int position, Item item) {
         itemsList.add(position, item);
         notifyItemInserted(position);
     }
@@ -174,7 +193,4 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         itemsList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
     }
-
-
-
 }

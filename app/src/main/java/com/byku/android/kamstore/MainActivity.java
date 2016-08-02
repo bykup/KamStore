@@ -33,11 +33,13 @@ import com.byku.android.kamstore.recview.*;
 import com.byku.android.kamstore.recview.adapters.BasketAdapter;
 import com.byku.android.kamstore.recview.adapters.ShopAdapter;
 
-/**
- * - w momencie zapisu do bazy - okienko z postepem
- */
 public class MainActivity extends AppCompatActivity{
     private StoreDataSource dataSource;
+    /**
+     * Protects from generating items more that once in the background
+     * Used in
+     * {@link MainActivity.generateItems(AsyncTask)}
+     */
     private boolean ifGeneratingItems = false;
 
     private RecyclerView recViewShop;
@@ -52,6 +54,11 @@ public class MainActivity extends AppCompatActivity{
     private ArrayList<Item> itemsShop;
     private ArrayList<Item> itemsBasket = new ArrayList<>();
 
+    /**
+     * Used to getExtras from service running in the background that saved the
+     * database to internal memory
+     * @link DatabaseService
+     */
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -113,7 +120,7 @@ public class MainActivity extends AppCompatActivity{
         recViewShop.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                if(!shopAdapter.getIfRemoving()) {
+                if(!shopAdapter.getIfRemoving() && position >= 0) {
                     shopAdapter.setIfRemoving(true);
                     basketAdapter.addItemSorted(shopAdapter.getItemAtPos(position), itemsBasket);
                     itemsShop.remove(itemsShop.indexOf(shopAdapter.getItemAtPos(position)));
@@ -129,11 +136,11 @@ public class MainActivity extends AppCompatActivity{
 
             }
         }));
-
         basketAdapter.setOnItemClickListener(new BasketAdapter.OnItemClickListener(){
             @Override
             public void onItemClick(View view, int position){
-                if(!basketAdapter.getIfRemoving()) {
+                if(!basketAdapter.getIfRemoving() && position >= 0) {
+                    view.setClickable(false);
                     basketAdapter.setIfRemoving(true);
                     shopAdapter.addItemSorted(basketAdapter.getItemAtPos(position), itemsShop);
                     itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
@@ -181,7 +188,7 @@ public class MainActivity extends AppCompatActivity{
                     Toast.makeText(MainActivity.this, "Nie można generować bazy gdy koszyk posiada produkty.", Toast.LENGTH_SHORT).show();
                 }else if(ifGeneratingItems){
                     Toast.makeText(MainActivity.this, "Baza w trakcie generowania.", Toast.LENGTH_SHORT).show();
-                }else if(DatabaseService.ifRunning){
+                }else if(DatabaseService.getIfRunning()){
                     Toast.makeText(MainActivity.this, "Baza w trakcie zapisywania.", Toast.LENGTH_SHORT).show();
 
                 }else{
@@ -280,7 +287,7 @@ public class MainActivity extends AppCompatActivity{
             char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
             char[] numbers = "1234567890".toCharArray();
             Random random = new Random();
-            for(int i =0; i < 1200; i++){
+            for(int i =0; i < 12; i++){
                 sbch = new StringBuilder();
                 for (int j = 0; j < 5; j++) {
                     char c = chars[random.nextInt(chars.length)];
@@ -323,5 +330,4 @@ public class MainActivity extends AppCompatActivity{
             getApplicationContext().startService(intent);
         }
     }
-
 }

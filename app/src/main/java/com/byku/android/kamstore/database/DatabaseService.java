@@ -9,16 +9,21 @@ import com.byku.android.kamstore.recview.Item;
 import java.util.ArrayList;
 
 public class DatabaseService extends IntentService {
-    public static boolean ifRunning = false;
+    /**
+     * ifRunning - used to get information if service is currently running(duh)
+     * {@link com.byku.android.kamstore.MainActivity}
+     * Checked in onOptionsItemSelected
+     */
+    private static boolean ifRunning = false;
     public static final String DATABASE = "storedatabase";
     public static final String FINISH = "finished";
     public static final String NOTIFICATION = "com.byku.android.kamstore.database";
 
     private StoreDataSource dataSource;
 
-    public DatabaseService(){
-        super("DatabaseSaver");
-    }
+    public DatabaseService(){ super("DatabaseSaver"); }
+
+    public static boolean getIfRunning(){ return ifRunning; }
 
     @Override
     protected void onHandleIntent(Intent intent){
@@ -44,5 +49,4 @@ public class DatabaseService extends IntentService {
         intent.putExtra(FINISH,result);
         sendBroadcast(intent);
     }
-
 }
