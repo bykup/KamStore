@@ -71,7 +71,7 @@ public class AnimationAlgorithms {
     }
 
     public static Animation setAnimationAddition(View viewToAnimate, Context context){
-        Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+        Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
         viewToAnimate.startAnimation(animation);
         return animation;
     }
