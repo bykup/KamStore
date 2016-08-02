@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.byku.android.kamstore.recview.Item;
 
@@ -47,7 +46,6 @@ public class StoreDataSource {
     public void storeAllItems(ArrayList<Item> items,StoreDataSource dataSource){
         dbHelper.onNewData(database);
         for(Item item : items){
-            Log.i("SAVE","Sotring " + item);
             ContentValues values = new ContentValues();
             values.put(StoreDatabaseHelper.COLUMN_NAME,item.getName());
             values.put(StoreDatabaseHelper.COLUMN_DESC, item.getDesc());

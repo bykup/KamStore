@@ -32,6 +32,9 @@ import com.byku.android.kamstore.algorithms.*;
 import com.byku.android.kamstore.database.DatabaseService;
 import com.byku.android.kamstore.database.StoreDataSource;
 import com.byku.android.kamstore.recview.*;
+import com.byku.android.kamstore.recview.adapters.BasketAdapter;
+import com.byku.android.kamstore.recview.adapters.ShopAdapter;
+
 /**
  * - w momencie zapisu do bazy - okienko z postepem
  */
@@ -85,11 +88,14 @@ public class MainActivity extends AppCompatActivity{
             itemsShop = dataSource.getAllItems();
             dataSource.close();
             ifDatabaseOpen = true;
-        } catch(SQLException e){
+        } catch(Exception e){
+            Log.i("LOG","Excetion");
             e.printStackTrace();
         }finally {
-            if(!ifDatabaseOpen)
+            if(!ifDatabaseOpen) {
                 itemsShop = new ArrayList<Item>();
+                Toast.makeText(MainActivity.this, "Błąd wczytania bazy danych!", Toast.LENGTH_LONG).show();
+            }
         }
 
         shopAdapter = new ShopAdapter(this, itemsShop);
@@ -267,7 +273,6 @@ public class MainActivity extends AppCompatActivity{
             Item item;
             String string, number;
             StringBuilder sbch, sbnr;
-            Log.i("LOG","LOOP");
             char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
             char[] numbers = "1234567890".toCharArray();
             Random random = new Random();
@@ -306,15 +311,11 @@ public class MainActivity extends AppCompatActivity{
         }
         @Override
         protected void onPostExecute(Long result) {
-            Log.i("LOG","POST EXECUTE");
             shopAdapter.setItemList(this.items);
             itemsShop = this.items;
-            Log.i("LOG","POST EXECUTE after list");
             ifGeneratingItems= false;
             Intent intent = new Intent(context,DatabaseService.class);
-            Log.i("LOG","POST EXECUTE intent");
             intent.putParcelableArrayListExtra(DatabaseService.DATABASE,itemsShop);
-            Log.i("LOG","POST EXECUTE putting parcerable");
             getApplicationContext().startService(intent);
         }
     }

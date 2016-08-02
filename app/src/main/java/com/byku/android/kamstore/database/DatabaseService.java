@@ -3,7 +3,6 @@ package com.byku.android.kamstore.database;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import com.byku.android.kamstore.recview.Item;
 
@@ -23,7 +22,6 @@ public class DatabaseService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent){
-        Log.i("LOG","Service started");
         ifRunning = true;
         ArrayList<Item> items = intent.getParcelableArrayListExtra(DatabaseService.DATABASE);
         dataSource = StoreDataSource.getStoreDataSource();
@@ -33,7 +31,7 @@ public class DatabaseService extends IntentService {
             dataSource.open();
             dataSource.storeAllItems(items,dataSource);
             result(Activity.RESULT_OK);
-        }//*/
+        }
     }
 
     private void result(int result){

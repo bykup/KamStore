@@ -1,14 +1,9 @@
-package com.byku.android.kamstore.Algorithms;
+package com.byku.android.kamstore.algorithms;
 
-import android.util.Log;
-
-import com.byku.android.kamstore.RecView.Item;
+import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
 
-/**
- * Created by Byku on 30.07.2016.
- */
 public class FilterAlgorithm {
     private FilterAlgorithm(){}
 
@@ -23,4 +18,5 @@ public class FilterAlgorithm {
         }
         return filteredItemList;
     }
+
 }
