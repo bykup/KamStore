@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity{
             dataSource.close();
             ifDatabaseOpen = true;
         } catch(Exception e){
-            Log.i("LOG","Excetion");
             e.printStackTrace();
         }finally {
             if(!ifDatabaseOpen) {
