@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity{
             char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
             char[] numbers = "1234567890".toCharArray();
             Random random = new Random();
-            for(int i =0; i < 12; i++){
+            for(int i =0; i < 1000; i++){
                 sbch = new StringBuilder();
                 for (int j = 0; j < 5; j++) {
                     char c = chars[random.nextInt(chars.length)];
