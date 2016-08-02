@@ -1,16 +1,18 @@
 package com.byku.android.kamstore.recview.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.byku.android.kamstore.R;
+import com.byku.android.kamstore.algorithms.AnimationAlgorithms;
 import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
@@ -19,14 +21,17 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
     private final LayoutInflater itemInfalter;
     private ArrayList<Item> itemsList;
     private Context context;
+    private boolean ifRemoving = false;
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
+        public RelativeLayout relativeLayout;
         public MyViewHolder(View view){
             super(view);
             name = (TextView) view.findViewById(R.id.shop_name);
             desc = (TextView) view.findViewById(R.id.shop_desc);
             cost = (TextView) view.findViewById(R.id.shop_price);
+            relativeLayout = (RelativeLayout) view.findViewById(R.id.in_store_list);
         }
     }
 
@@ -42,6 +47,12 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         holder.name.setText(item.getName());
         holder.desc.setText(item.getDesc());
         holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
+        AnimationAlgorithms.setAnimationAddition(holder.relativeLayout,context);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(final ShopAdapter.MyViewHolder holder){
+        holder.relativeLayout.clearAnimation();
     }
 
     public ShopAdapter(Context context, ArrayList<Item> itemsList){
@@ -52,15 +63,35 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
 
     @Override
     public int getItemCount(){ return itemsList.size(); }
-
-    public Item getItemAtPos(int position){
-        return itemsList.get(position);
+    public Item getItemAtPos(int position){ return itemsList.get(position); }
+    public double getTotalCost(){
+        double totalCost = 0.0;
+        for(Item item : itemsList){
+            totalCost += item.getCost();
+        }
+        return totalCost;
     }
+    public ArrayList<Item> getListCopy(){ return new ArrayList<Item>(itemsList); }
+    public boolean getIfRemoving(){ return ifRemoving; }
+
+    public void setItemList(ArrayList<Item> itemsList) {
+        this.itemsList = new ArrayList<Item>(itemsList);
+        notifyDataSetChanged();
+    }
+    public void setIfRemoving(boolean irem){ this.ifRemoving = irem; }
 
     public void animateTo(ArrayList<Item> items){
         applyAndAnimateRemovals(items);
         applyAndAnimateAdditions(items);
         applyAndAnimateMovedItems(items);
+    }
+    private void applyAndAnimateAdditions(ArrayList<Item> items) {
+        for (int i = 0, count = items.size(); i < count; i++) {
+            final Item item = items.get(i);
+            if (!itemsList.contains(item)) {
+                addItem(i, item);
+            }
+        }
     }
     private void applyAndAnimateRemovals(ArrayList<Item> items) {
         for (int i = itemsList.size() - 1; i >= 0; i--) {
@@ -70,24 +101,44 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
             }
         }
     }
-    public Item removeItem(int position) {
+    private void applyAndAnimateMovedItems(ArrayList<Item> items) {
+        for (int toPosition = items.size() - 1; toPosition >= 0; toPosition--) {
+            final Item item = items.get(toPosition);
+            final int fromPosition = itemsList.indexOf(item);
+            if (fromPosition >= 0 && fromPosition != toPosition) {
+                moveItem(fromPosition, toPosition);
+            }
+        }
+    }
+
+    private Item removeItem(int position) {
         final Item item = itemsList.remove(position);
         notifyItemRemoved(position);
         return item;
     }
-
-    private void applyAndAnimateAdditions(ArrayList<Item> items) {
-        for (int i = 0, count = items.size(); i < count; i++) {
-            final Item item = items.get(i);
-            if (!itemsList.contains(item)) {
-                addItem(i, item);
+    public void removeItemAnimated(final View view, final int position) {
+        AnimationAlgorithms.setAnimationRemoval(view, context).setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                animation.setFillAfter(true);
             }
-        }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                itemsList.remove(position);
+                notifyItemRemoved(position);
+                ifRemoving = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
     }
-    public int addItemSorted(Item item, Activity mainActivity,ArrayList<Item> sourceArray){
+    public int addItemSorted(Item item, ArrayList<Item> sourceArray){
         int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
         if(sourceArray.contains(item)){
-            Toast.makeText(mainActivity, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
             return -2;
         }
         while(j <= itemsSourceSize){
@@ -118,37 +169,12 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         itemsList.add(position, item);
         notifyItemInserted(position);
     }
-
-    private void applyAndAnimateMovedItems(ArrayList<Item> items) {
-        for (int toPosition = items.size() - 1; toPosition >= 0; toPosition--) {
-            final Item item = items.get(toPosition);
-            final int fromPosition = itemsList.indexOf(item);
-            if (fromPosition >= 0 && fromPosition != toPosition) {
-                moveItem(fromPosition, toPosition);
-            }
-        }
-    }
-    public void moveItem(int fromPosition, int toPosition) {
+    private void moveItem(int fromPosition, int toPosition) {
         final Item item = itemsList.remove(fromPosition);
         itemsList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public double getTotalCost(){
-        double totalCost = 0.0;
-        for(Item item : itemsList){
-            totalCost += item.getCost();
-        }
-        return totalCost;
-    }
 
-    public void setItemList(ArrayList<Item> itemsList) {
-        this.itemsList = new ArrayList<Item>(itemsList);
-        notifyDataSetChanged();
-    }
-
-    public ArrayList<Item> getListCopy(){
-        return new ArrayList<Item>(itemsList);
-    }
 
 }

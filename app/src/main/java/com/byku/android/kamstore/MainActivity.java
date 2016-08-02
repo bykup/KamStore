@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.SQLException;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -115,12 +113,16 @@ public class MainActivity extends AppCompatActivity{
         recViewShop.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recViewShop, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                basketAdapter.addItemSorted(shopAdapter.getItemAtPos(position),MainActivity.this,itemsBasket);
-                itemsShop.remove(itemsShop.indexOf(shopAdapter.getItemAtPos(position)));
-                shopAdapter.removeItem(position);
-                basketQuantity.setText("" + itemsBasket.size());
-                basketStatus.setText(""+ basketAdapter.getTotalCost() + " zł");
-                if(AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1) AnimationAlgorithms.expand(basketButton);//*/
+                if(!shopAdapter.getIfRemoving()) {
+                    shopAdapter.setIfRemoving(true);
+                    basketAdapter.addItemSorted(shopAdapter.getItemAtPos(position), itemsBasket);
+                    itemsShop.remove(itemsShop.indexOf(shopAdapter.getItemAtPos(position)));
+                    shopAdapter.removeItemAnimated(view, position);
+                    basketQuantity.setText("" + itemsBasket.size());
+                    basketStatus.setText("" + basketAdapter.getTotalCost() + " zł");
+                    if (AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1)
+                        AnimationAlgorithms.expand(basketButton);//*/
+                }
             }
             @Override
             public void onLongClick(View view, int position) {
@@ -131,14 +133,17 @@ public class MainActivity extends AppCompatActivity{
         basketAdapter.setOnItemClickListener(new BasketAdapter.OnItemClickListener(){
             @Override
             public void onItemClick(View view, int position){
-                shopAdapter.addItemSorted(basketAdapter.getItemAtPos(position),MainActivity.this,itemsShop);
-                itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
-                basketAdapter.removeItem(position);
-                basketQuantity.setText("" + itemsBasket.size());
-                basketStatus.setText(""+ basketAdapter.getTotalCost() + " zł");
-                if(itemsBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(recViewBasket.getId())==0){
-                    AnimationAlgorithms.collapse(recViewBasket);
-                    AnimationAlgorithms.collapse(basketButton);
+                if(!basketAdapter.getIfRemoving()) {
+                    basketAdapter.setIfRemoving(true);
+                    shopAdapter.addItemSorted(basketAdapter.getItemAtPos(position), itemsShop);
+                    itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
+                    basketAdapter.removeItemAnimated(view, position);
+                    basketQuantity.setText("" + itemsBasket.size());
+                    basketStatus.setText("" + basketAdapter.getTotalCost() + " zł");
+                    if (itemsBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(recViewBasket.getId()) == 0) {
+                        AnimationAlgorithms.collapse(recViewBasket);
+                        AnimationAlgorithms.collapse(basketButton);
+                    }
                 }
             }
         });

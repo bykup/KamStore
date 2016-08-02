@@ -24,13 +24,17 @@ public class DatabaseService extends IntentService {
     protected void onHandleIntent(Intent intent){
         ifRunning = true;
         ArrayList<Item> items = intent.getParcelableArrayListExtra(DatabaseService.DATABASE);
-        dataSource = StoreDataSource.getStoreDataSource();
-        if(dataSource==null){
+        try {
+            dataSource = StoreDataSource.getStoreDataSource();
+        }catch(NullPointerException e){
+            e.printStackTrace();
             result(Activity.RESULT_CANCELED);
-        }else {
-            dataSource.open();
-            dataSource.storeAllItems(items,dataSource);
-            result(Activity.RESULT_OK);
+        }finally {
+            if(dataSource!=null){
+                dataSource.open();
+                dataSource.storeAllItems(items,dataSource);
+                result(Activity.RESULT_OK);
+            }
         }
     }
 
