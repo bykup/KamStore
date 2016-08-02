@@ -1,4 +1,4 @@
-package com.byku.android.kamstore.RecView.Abstract;
+package com.byku.android.kamstore.recview.template;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,12 +9,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.byku.android.kamstore.R;
-import com.byku.android.kamstore.RecView.Item;
+import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
-//PRZEROBIC aby reszta klas dziedziczyła po tej
 abstract public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
     private final LayoutInflater itemInfalter;
     private ArrayList<Item> itemsList;
@@ -42,7 +40,6 @@ abstract public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         return new MyViewHolder(itemView);
     }
 
-
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position){
         Item item = itemsList.get(position);
@@ -55,7 +52,6 @@ abstract public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
     public int getItemCount(){
         return itemsList.size();
     }
-
 
     public Item getItemAtPos(int position){
         return itemsList.get(position);
@@ -88,15 +84,7 @@ abstract public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             }
         }
     }
-    //optimize!
-    /**
-     * - baza sqlite
-     * - wyszukiwanie
-     * - nagłowek koszyka - aktualizacja z ceną
-     * - przechowywanie danych
-     * - synchronizacja przy dodawaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
-     * - synchronizacja przy usuwaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
-     */
+
     public int addItemSorted(Item item, Activity mainActivity,ArrayList<Item> sourceArray){
         int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
         if(sourceArray.contains(item)){

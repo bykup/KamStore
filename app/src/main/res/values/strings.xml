@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">Sklep Janusze Biznesu</string>
+    <string name="app_name">Sklep Chaosik</string>
     <string name="action_settings">Ustawienia</string>
-    <string name="test">Test</string>
+    <string name="test">Generuj bazę</string>
     <string name="basket">Koszyk</string>
     <string name="del_item">Usuń</string>
+    <string name="basket_picture">Obrazek koszyka</string>
+    <string name="item_picture">Obrazek produktu</string>
 </resources>

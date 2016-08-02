@@ -11,30 +11,36 @@
     android:background="?android:attr/selectableItemBackground"
     android:orientation="vertical">
 
+
+    <ImageView
+        android:id="@+id/item_picture_b"
+        android:contentDescription="@string/item_picture"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <TextView
         android:id="@+id/basket_name"
         android:textColor="@color/name"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:layout_toEndOf="@id/item_picture_b"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TEST"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/basket_desc"
+        android:layout_toEndOf="@id/item_picture_b"
         android:layout_below="@id/basket_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TEST"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/basket_price"
         android:textColor="@color/price"
         android:layout_width="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_height="wrap_content"
-        android:text="TEST"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/basket_delete"

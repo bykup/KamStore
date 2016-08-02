@@ -1,14 +1,13 @@
-package com.byku.android.kamstore.RecView;
+package com.byku.android.kamstore.recview;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Item implements Comparable<Item>{
+public class Item implements Comparable<Item>,Parcelable{
     private long id;
-    private final String name;
+    private String name;
     private String desc;
     private double cost;
-    public Item(){
-        name = new String("Default");
-    }
 
     public Item(String name, String desc, double cost){
         if(name == null || desc == null)
@@ -24,6 +23,18 @@ public class Item implements Comparable<Item>{
         this.name = name;
         this.desc = desc;
         this.cost = cost;
+    }
+    public Item(Long id, Item item){
+        this.id = id;
+        this.name = item.getName();
+        this.desc = item.getDesc();
+        this.cost = item.getCost();
+    }
+    public Item(Parcel in){
+        this.id = in.readLong();
+        this.name = in.readString();
+        this.desc = in.readString();
+        this.cost = in.readDouble();
     }
 
     public String getName(){return name;}
@@ -56,4 +67,23 @@ public class Item implements Comparable<Item>{
         int lastCmp = name.compareTo(i.getName());
         return (lastCmp !=0 ? lastCmp : name.compareTo(i.getName()));
     }
+
+    @Override
+    public int describeContents(){ return 0; }
+    @Override
+    public void writeToParcel(Parcel dest, int flags){
+        dest.writeLong(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.desc);
+        dest.writeDouble(this.cost);
+    }
+
+    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>(){
+        public Item createFromParcel(Parcel in){
+            return new Item(in);
+        }
+        public Item[] newArray(int size){
+            return new Item[size];
+        }
+    };
 }

@@ -1,6 +1,10 @@
 package com.byku.android.kamstore;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.SQLException;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,31 +23,49 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-import com.byku.android.kamstore.Algorithms.*;
-import com.byku.android.kamstore.RecView.*;
+import com.byku.android.kamstore.algorithms.*;
+import com.byku.android.kamstore.database.DatabaseService;
+import com.byku.android.kamstore.database.StoreDataSource;
+import com.byku.android.kamstore.recview.*;
 /**
- * - baza sqlite
- * - wyszukiwanie
- * - nagłowek koszyka - aktualizacja z ceną
- * - przechowywanie danych
- * - nie wrzucanie tych samych produktow
- * - synchronizacja przy dodawaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
- * - synchronizacja przy usuwaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
+ * - w momencie zapisu do bazy - okienko z postepem
  */
 public class MainActivity extends AppCompatActivity{
+    private StoreDataSource dataSource;
+    private boolean ifGeneratingItems = false;
+
     private RecyclerView recViewShop;
     private RecyclerView recViewBasket;
     private RelativeLayout basketButton;
-    private ShopAdapter shopAdapter;
-    private BasketAdapter basketAdapter;
     private EditText inputSearch;
     private TextView basketStatus;
     private TextView basketQuantity;
-    private ArrayList<Item> itemsShop = new ArrayList<>();
+
+    private ShopAdapter shopAdapter;
+    private BasketAdapter basketAdapter;
+    private ArrayList<Item> itemsShop;
     private ArrayList<Item> itemsBasket = new ArrayList<>();
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            if(bundle != null){
+                    int resultCode = bundle.getInt(DatabaseService.FINISH);
+                    if(resultCode == RESULT_OK) {
+                        Toast.makeText(MainActivity.this, "Baza zapisana.", Toast.LENGTH_SHORT).show();
+                    } else{
+                        Toast.makeText(MainActivity.this, "Błąd w zapisie bazy.", Toast.LENGTH_SHORT).show();
+                    }
+            }
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +78,27 @@ public class MainActivity extends AppCompatActivity{
         basketStatus = (TextView) findViewById(R.id.basket_status);
         basketQuantity = (TextView) findViewById(R.id.basket_quantity);
 
+        dataSource = StoreDataSource.createStoreDataSource(this);
+        boolean ifDatabaseOpen = false;
+        try {
+            dataSource.open();
+            itemsShop = dataSource.getAllItems();
+            dataSource.close();
+            ifDatabaseOpen = true;
+        } catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            if(!ifDatabaseOpen)
+                itemsShop = new ArrayList<Item>();
+        }
+
         shopAdapter = new ShopAdapter(this, itemsShop);
         recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
         recViewShop.setAdapter(shopAdapter);
         recViewShop.setHasFixedSize(true);
-        prepareItemData();
+
 
         basketAdapter = new BasketAdapter(this, itemsBasket);
         recViewBasket.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -131,11 +167,32 @@ public class MainActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.test:
-                shopAdapter.addItemSorted(new Item("ZG","test",222),MainActivity.this,itemsShop);
+                if(itemsBasket.size() != 0){
+                    Toast.makeText(MainActivity.this, "Nie można generować bazy gdy koszyk posiada produkty.", Toast.LENGTH_SHORT).show();
+                }else if(ifGeneratingItems){
+                    Toast.makeText(MainActivity.this, "Baza w trakcie generowania.", Toast.LENGTH_SHORT).show();
+                }else if(DatabaseService.ifRunning){
+                    Toast.makeText(MainActivity.this, "Baza w trakcie zapisywania.", Toast.LENGTH_SHORT).show();
+
+                }else{
+                    Toast.makeText(MainActivity.this, "Rozpoczęto generowanie bazy.", Toast.LENGTH_SHORT).show();
+                    generateDatabase();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        registerReceiver(receiver, new IntentFilter(DatabaseService.NOTIFICATION));
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
     public void onClick(View view){
         switch(view.getId()){
             case R.id.basket_button:
@@ -190,79 +247,76 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private class SortAndPublish extends AsyncTask<String, String, String> {
-        ShopAdapter adapter;
-        ArrayList<Item> list;
+    private void generateDatabase(){
+        itemsShop.clear();
+        new generateItems(this).execute("");
+    }
 
-        SortAndPublish(ShopAdapter adapter, ArrayList<Item> list){
-            this.adapter = adapter;
-            this.list = list;
+    private class generateItems extends AsyncTask<String, Integer, Long> {
 
+        ArrayList<Item> items = new ArrayList<Item>();
+        Context context;
+
+        generateItems(Context context){
+            this.context = context;
         }
-        @Override
-        protected void onPreExecute() {
 
-        }
         @Override
-        protected String doInBackground(String... args) {
-            Log.i("LOG","doInBackground");
+        protected Long doInBackground(String... urls) {
+            ifGeneratingItems = true;
+            Item item;
+            String string, number;
+            StringBuilder sbch, sbnr;
+            Log.i("LOG","LOOP");
+            char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+            char[] numbers = "1234567890".toCharArray();
+            Random random = new Random();
+            for(int i =0; i < 1200; i++){
+                sbch = new StringBuilder();
+                for (int j = 0; j < 5; j++) {
+                    char c = chars[random.nextInt(chars.length)];
+                    sbch.append(c);
+                }
+                sbnr = new StringBuilder();
+                for (int j = 0; j < 4; j++) {
+                    char c = numbers[random.nextInt(numbers.length)];
+                    sbnr.append(c);
+                }
+                string = sbch.toString();
+                number = sbnr.toString();
+                item = new Item(string, string, Double.parseDouble(number));
+                int j=0, itemsSourceSize = items.size();
+                if(!items.contains(item)){
+                    while(j <= itemsSourceSize){
+                        if(j != itemsSourceSize && items.get(j).compareTo(item) > 0) {
+                            items.add(j, item);
+                            break;
+                        } else if(j==itemsSourceSize){
+                            items.add(item);
+                            break;
+                        }
+                        j++;
+                    }
+                }
+            }
             return null;
         }
         @Override
-        protected void onPostExecute(String result) {
-            Log.i("LOG","onPostExecute");
-
+        protected void onProgressUpdate(Integer... progress) {
         }
-    }
-
-    private void prepareItemData() {
-        Item item = new Item("Mad Max: Fury Road", "Action & Adventure", 2015);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Inside Out", "Animation, Kids & Family", 2015);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Star Wars: Episode VII - The Force Awakens", "Action", 2015);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Shaun the Sheep", "Animation", 2015);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("The Martian", "Science Fiction & Fantasy", 2015);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Mission: Impossible Rogue Nation", "Action", 2015);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Up", "Animation", 2009);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Star Trek", "Science Fiction", 2009);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("The LEGO Item", "Animation", 2014);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Iron Man", "Action & Adventure", 2008);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Aliens", "Science Fiction", 198);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Chicken Run", "Animation", 2000);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Back to the Future", "Science Fiction", 1985);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Raiders of the Lost Ark", "Action & Adventure", 1981);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Goldfinger", "Action & Adventure", 1965);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
-
-        item = new Item("Guardians of the Galaxy", "Science Fiction & Fantasy", 2014);
-        shopAdapter.addItemSorted(item,MainActivity.this,itemsShop);
+        @Override
+        protected void onPostExecute(Long result) {
+            Log.i("LOG","POST EXECUTE");
+            shopAdapter.setItemList(this.items);
+            itemsShop = this.items;
+            Log.i("LOG","POST EXECUTE after list");
+            ifGeneratingItems= false;
+            Intent intent = new Intent(context,DatabaseService.class);
+            Log.i("LOG","POST EXECUTE intent");
+            intent.putParcelableArrayListExtra(DatabaseService.DATABASE,itemsShop);
+            Log.i("LOG","POST EXECUTE putting parcerable");
+            getApplicationContext().startService(intent);
+        }
     }
 
 }

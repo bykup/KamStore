@@ -15,15 +15,15 @@
         android:scrollbars="vertical"
         />
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/basket_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:focusable="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:clickable="true"
-        android:id="@+id/basket_button"
         android:layout_below="@id/basket_list"
         android:onClick="onClick"
         android:background="#c3c5ff"
@@ -51,10 +51,11 @@
             android:layout_toStartOf="@+id/imageView" />
 
         <ImageView
+            android:id="@+id/imageView"
             android:src="@drawable/ic_shopping_cart_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView"
+            android:contentDescription="@string/basket_picture"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>

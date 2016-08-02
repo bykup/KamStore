@@ -1,4 +1,4 @@
-package com.byku.android.kamstore.Algorithms;
+package com.byku.android.kamstore.algorithms;
 
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -7,15 +7,10 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
-
-/**
- * Created by Byku on 28.07.2016.
- */
-final public class AnimationAlgorithms {
+public class AnimationAlgorithms {
     private AnimationAlgorithms(){}
     private static SparseIntArray ifCollapsed = new SparseIntArray();
     private static SparseIntArray viewsDimensions = new SparseIntArray();
-
 
     public static void expand(final View v) {
         v.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -30,7 +25,7 @@ final public class AnimationAlgorithms {
             @Override
             protected void applyTransformation(float interpolatedTime, Transformation t) {
                 v.getLayoutParams().height = targetHeight == 1 ? -2 : (int)(targetHeight * interpolatedTime);
-                //Log.i("LOG","height: " + v.getLayoutParams().height + ", float" + interpolatedTime);
+                Log.i("LOG","height: " + v.getLayoutParams().height + ", float" + interpolatedTime);
                 v.requestLayout();
             }
 
@@ -76,7 +71,6 @@ final public class AnimationAlgorithms {
         v.startAnimation(a);
     }
 
-    //implement exceptions!!
     public static Integer getIfCollapsed(Integer id){
         return ifCollapsed.get(id);
     }

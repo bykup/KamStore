@@ -1,12 +1,9 @@
-package com.byku.android.kamstore.Database;
+package com.byku.android.kamstore.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by Byku on 01.08.2016.
- */
 public class StoreDatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_STORE = "shop";
     public static final String COLUMN_ID = "_id";
@@ -28,6 +25,11 @@ public class StoreDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database){
         database.execSQL(DATABASE_CREATE);
+    }
+
+    public void onNewData(SQLiteDatabase db){
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STORE);
+        onCreate(db);
     }
 
     @Override

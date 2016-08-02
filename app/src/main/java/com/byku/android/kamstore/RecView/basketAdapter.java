@@ -1,4 +1,4 @@
-package com.byku.android.kamstore.RecView;
+package com.byku.android.kamstore.recview;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,18 +48,11 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         }
     }
 
-    public BasketAdapter(Context context, ArrayList<Item> itemsList){
-        itemInfalter = LayoutInflater.from(context);
-        this.itemsList = new ArrayList<Item>(itemsList);
-        this.context = context;
-    }
-
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         final View itemView = itemInfalter.inflate(R.layout.basket_items,parent,false);
         return new MyViewHolder(itemView);
     }
-
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position){
@@ -69,6 +61,12 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         holder.desc.setText(item.getDesc());
         holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
 
+    }
+
+    public BasketAdapter(Context context, ArrayList<Item> itemsList){
+        itemInfalter = LayoutInflater.from(context);
+        this.itemsList = new ArrayList<Item>(itemsList);
+        this.context = context;
     }
 
     @Override
@@ -162,6 +160,7 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
 
     public void setItemList(ArrayList<Item> itemsList) {
         this.itemsList = new ArrayList<Item>(itemsList);
+        notifyDataSetChanged();
     }
 
     public double getTotalCost(){

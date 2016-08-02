@@ -1,4 +1,4 @@
-package com.byku.android.kamstore.RecView;
+package com.byku.android.kamstore.recview;
 
 import android.app.Activity;
 import android.content.Context;
@@ -29,18 +29,11 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         }
     }
 
-    public ShopAdapter(Context context, ArrayList<Item> itemsList){
-        itemInfalter = LayoutInflater.from(context);
-        this.itemsList = new ArrayList<Item>(itemsList);
-        this.context = context;
-    }
-
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         final View itemView = itemInfalter.inflate(R.layout.shop_items,parent,false);
         return new MyViewHolder(itemView);
     }
-
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position){
@@ -50,11 +43,14 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
     }
 
-    @Override
-    public int getItemCount(){
-        return itemsList.size();
+    public ShopAdapter(Context context, ArrayList<Item> itemsList){
+        itemInfalter = LayoutInflater.from(context);
+        this.itemsList = new ArrayList<Item>(itemsList);
+        this.context = context;
     }
 
+    @Override
+    public int getItemCount(){ return itemsList.size(); }
 
     public Item getItemAtPos(int position){
         return itemsList.get(position);
@@ -87,15 +83,6 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
             }
         }
     }
-    //optimize!
-    /**
-     * - baza sqlite
-     * - wyszukiwanie
-     * - nagłowek koszyka - aktualizacja z ceną
-     * - przechowywanie danych
-     * - synchronizacja przy dodawaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
-     * - synchronizacja przy usuwaniu produktow(jak mamy liste z pasujacymi produktami do frazy wyszukiwania)
-     */
     public int addItemSorted(Item item, Activity mainActivity,ArrayList<Item> sourceArray){
         int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
         if(sourceArray.contains(item)){
@@ -146,16 +133,17 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         notifyItemMoved(fromPosition, toPosition);
     }
 
-    public void setItemList(ArrayList<Item> itemsList) {
-        this.itemsList = new ArrayList<Item>(itemsList);
-    }
-
     public double getTotalCost(){
         double totalCost = 0.0;
         for(Item item : itemsList){
             totalCost += item.getCost();
         }
         return totalCost;
+    }
+
+    public void setItemList(ArrayList<Item> itemsList) {
+        this.itemsList = new ArrayList<Item>(itemsList);
+        notifyDataSetChanged();
     }
 
     public ArrayList<Item> getListCopy(){
