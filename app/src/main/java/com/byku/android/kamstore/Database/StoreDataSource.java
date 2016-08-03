@@ -36,8 +36,9 @@ public class StoreDataSource {
     }
 
     /**
-     * At the beginning it was a good idea, but after some(v.little) though it is useless, but i've left
-     * it here just to... well...use exceptions
+     * Used it DatabaseService, to be used when we do not want
+     * to create instance, and we do not have access to MainActivity
+     * context
      * @return StoreDataSource
      * @throws NullPointerException
      */
