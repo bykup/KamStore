@@ -43,19 +43,18 @@
         android:layout_alignParentEnd="true"
         android:layout_height="wrap_content" />
 
-    <ImageButton
-        android:src="@drawable/ic_close_black_24dp"
+    <Button
         android:id="@+id/basket_delete"
+        android:text="@string/del_item"
         android:clickable="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/basket_price"
         android:background="#c3c5ff"
-        android:elevation="4dp"/>
+        android:elevation="4dp"
+        android:drawableLeft="@drawable/ic_close_black_24dp"/>
 
 </RelativeLayout>

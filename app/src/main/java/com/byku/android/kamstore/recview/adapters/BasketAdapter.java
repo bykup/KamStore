@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,13 +37,13 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
         public RelativeLayout relativeLayout;
-        public ImageButton del;
+        public Button del;
         public MyViewHolder(View view){
             super(view);
             name = (TextView) view.findViewById(R.id.basket_name);
             desc = (TextView) view.findViewById(R.id.basket_desc);
             cost = (TextView) view.findViewById(R.id.basket_price);
-            del = (ImageButton) view.findViewById(R.id.basket_delete);
+            del = (Button) view.findViewById(R.id.basket_delete);
             relativeLayout = (RelativeLayout) view.findViewById(R.id.in_basket_list);
 
             del.setOnClickListener(new View.OnClickListener() {
