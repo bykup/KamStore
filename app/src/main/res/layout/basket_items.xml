@@ -43,10 +43,10 @@
         android:layout_alignParentEnd="true"
         android:layout_height="wrap_content" />
 
-    <TextView
+    <ImageButton
+        android:src="@drawable/ic_close_black_24dp"
         android:id="@+id/basket_delete"
         android:clickable="true"
-        android:text="@string/del_item"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="3dp"

@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity{
                     itemsShop.remove(itemsShop.indexOf(shopAdapter.getItemAtPos(position)));
                     shopAdapter.removeItemAnimated(view, position);
                     basketQuantity.setText("" + itemsBasket.size());
-                    basketStatus.setText("" + basketAdapter.getTotalCost() + " zł");
+                    basketStatus.setText(String.format("%.2f",basketAdapter.getTotalCost())+" zł");
                     if (AnimationAlgorithms.getIfCollapsed(basketButton.getId()) == 1)
                         AnimationAlgorithms.expand(basketButton);//*/
                 }
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity{
                     itemsBasket.remove(itemsBasket.indexOf(basketAdapter.getItemAtPos(position)));
                     basketAdapter.removeItemAnimated(view, position);
                     basketQuantity.setText("" + itemsBasket.size());
-                    basketStatus.setText("" + basketAdapter.getTotalCost() + " zł");
+                    basketStatus.setText(String.format("%.2f",basketAdapter.getTotalCost())+" zł");
                     if (itemsBasket.isEmpty() && AnimationAlgorithms.getIfCollapsed(recViewBasket.getId()) == 0) {
                         AnimationAlgorithms.collapse(recViewBasket);
                         AnimationAlgorithms.collapse(basketButton);

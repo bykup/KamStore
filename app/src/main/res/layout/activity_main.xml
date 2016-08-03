@@ -8,12 +8,7 @@
     android:focusableInTouchMode="true"
     tools:context=".MainActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/basket_list"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:scrollbars="vertical"
-        />
+
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/basket_button"
         android:layout_width="match_parent"
@@ -24,7 +19,6 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:clickable="true"
-        android:layout_below="@id/basket_list"
         android:onClick="onClick"
         android:background="#c3c5ff"
         android:orientation="vertical"
@@ -59,10 +53,18 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/basket_list"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:scrollbars="vertical"
+        android:layout_below="@id/basket_button"
+        />
+
     <EditText
         android:id="@+id/search_bar"
         android:inputType="text"
-        android:layout_below="@id/basket_button"
+        android:layout_below="@id/basket_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:descendantFocusability="beforeDescendants"
