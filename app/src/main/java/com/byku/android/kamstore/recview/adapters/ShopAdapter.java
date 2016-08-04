@@ -2,6 +2,7 @@ package com.byku.android.kamstore.recview.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,8 +141,23 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         });
     }
     public int addItemSorted(Item item, ArrayList<Item> sourceArray){
-        int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
-        if(sourceArray.contains(item)){
+        //int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
+
+        int pos = getPositionSorted(sourceArray,0,sourceArray.size()-1,item);
+        if(pos == -1){
+            Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
+            return -2;
+        } else{
+            sourceArray.add(pos,item);
+        }
+        pos = getPositionSorted(itemsList,0,itemsList.size()-1,item);
+        if(pos == -1){
+            Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
+        } else{
+            itemsList.add(pos,item);
+            notifyItemInserted(pos);
+        }//*/
+        /*if(sourceArray.contains(item)){
             Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
             return -2;
         }
@@ -154,8 +170,8 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
                 break;
             }
             j++;
-        }
-        while(i <= itemsListSize){
+        }//*/
+        /*while(i <= itemsListSize){
             if(i != itemsListSize && itemsList.get(i).compareTo(item) > 0) {
                 itemsList.add(i, item);
                 notifyItemInserted(i);
@@ -166,11 +182,12 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
                 return i;
             }
             i++;
-        }
+        }//*/
         return -1;
     }
-    //Eksperyment
-    /*private int getPositionSorted(ArrayList<Item> items, int left, int right, Item item) {
+
+    public static int getPositionSorted(ArrayList<Item> items, int left, int right, Item item) {
+        if(right == -1) return 0;
         if(left == right){
             int temp = items.get(left).compareTo(item);
             if(temp == 0) return -1;
@@ -182,7 +199,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         }else if(items.get(left+(right-left)/2).compareTo(item) > 0) {
             return getPositionSorted(items,left,left+(right-left)/2,item);
         }else return -1;
-    }//*/
+    }
 
     private void addItemUnsorted(int position, Item item) {
         itemsList.add(position, item);

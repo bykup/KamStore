@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -287,7 +288,8 @@ public class MainActivity extends AppCompatActivity{
             char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
             char[] numbers = "1234567890".toCharArray();
             Random random = new Random();
-            for(int i =0; i < 1000; i++){
+            Log.i("LOG","TEST SZYBKOSCI");
+            for(int i =0; i < 11; i++){
                 sbch = new StringBuilder();
                 for (int j = 0; j < 5; j++) {
                     char c = chars[random.nextInt(chars.length)];
@@ -301,8 +303,11 @@ public class MainActivity extends AppCompatActivity{
                 string = sbch.toString();
                 number = sbnr.toString();
                 item = new Item(string, string, Double.parseDouble(number));
-                int j=0, itemsSourceSize = items.size();
-                if(!items.contains(item)){
+                //int j=0, itemsSourceSize = items.size();
+
+                int pos = ShopAdapter.getPositionSorted(items, 0, items.size()-1, item);
+                if(pos != -1) items.add(pos, item);
+                /*if(!items.contains(item)){
                     while(j <= itemsSourceSize){
                         if(j != itemsSourceSize && items.get(j).compareTo(item) > 0) {
                             items.add(j, item);
@@ -313,8 +318,9 @@ public class MainActivity extends AppCompatActivity{
                         }
                         j++;
                     }
-                }
+                }//*/
             }
+            Log.i("LOG","TEST SZYBKOSCI KONIEC");
             return null;
         }
         @Override

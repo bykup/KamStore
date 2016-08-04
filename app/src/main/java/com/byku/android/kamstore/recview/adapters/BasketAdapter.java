@@ -6,8 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,13 +35,13 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
         public RelativeLayout relativeLayout;
-        public Button del;
+        public TextView del;
         public MyViewHolder(View view){
             super(view);
             name = (TextView) view.findViewById(R.id.basket_name);
             desc = (TextView) view.findViewById(R.id.basket_desc);
             cost = (TextView) view.findViewById(R.id.basket_price);
-            del = (Button) view.findViewById(R.id.basket_delete);
+            del = (TextView) view.findViewById(R.id.basket_delete);
             relativeLayout = (RelativeLayout) view.findViewById(R.id.in_basket_list);
 
             del.setOnClickListener(new View.OnClickListener() {
@@ -136,27 +134,43 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         return item;
     }
     public void removeItemAnimated(final View view, final int position) {
-            AnimationAlgorithms.setAnimationRemoval(view, context).setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                    animation.setFillAfter(true);
-                }
+        AnimationAlgorithms.setAnimationRemoval(view, context).setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                animation.setFillAfter(true);
+            }
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    itemsList.remove(position);
-                    notifyItemRemoved(position);
-                    view.setClickable(true);
-                    ifRemoving = false;
-                }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                itemsList.remove(position);
+                notifyItemRemoved(position);
+                view.setClickable(true);
+                ifRemoving = false;
+            }
 
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
     }
     public int addItemSorted(Item item ,ArrayList<Item> sourceArray){
-        int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
+
+        int pos = getPositionSorted(sourceArray,0,sourceArray.size()-1,item);
+        if(pos == -1){
+            Toast.makeText(context, "Blad - addItemSorted basket", Toast.LENGTH_SHORT).show();
+            return -2;
+        } else{
+            sourceArray.add(pos,item);
+        }
+        pos = getPositionSorted(itemsList,0,itemsList.size()-1,item);
+        if(pos == -1){
+            Toast.makeText(context, "Blad - addItemSorted basket", Toast.LENGTH_SHORT).show();
+        } else{
+            itemsList.add(pos,item);
+            notifyItemInserted(pos);
+        }
+
+        /*int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
         if(sourceArray.contains(item)){
             Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
             return -2;
@@ -182,9 +196,26 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
                 return i;
             }
             i++;
-        }
+        }//*/
         return -1;
     }
+
+    public static int getPositionSorted(ArrayList<Item> items, int left, int right, Item item) {
+        if(right == -1) return 0;
+        if(left == right){
+            int temp = items.get(left).compareTo(item);
+            if(temp == 0) return -1;
+            else if(temp < 0) return right + 1;
+            else return right;
+        }
+        if(items.get(left+(right-left)/2).compareTo(item) < 0){
+            return getPositionSorted(items,left+(right-left)/2+1,right,item);
+        }else if(items.get(left+(right-left)/2).compareTo(item) > 0) {
+            return getPositionSorted(items,left,left+(right-left)/2,item);
+        }else return -1;
+    }
+
+
     private void addItem(int position, Item item) {
         itemsList.add(position, item);
         notifyItemInserted(position);
