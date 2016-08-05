@@ -32,6 +32,7 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
     protected boolean ifRemoving = false;
 
     protected OnItemClickListener listener;
+
     public interface OnItemClickListener { void onItemClick(View itemView, int position); }
     public void setOnItemClickListener(OnItemClickListener listener) { this.listener = listener; }
 
@@ -67,43 +68,6 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         notifyDataSetChanged();
     }
     public void setIfRemoving(boolean item){ this.ifRemoving = item; }
-
-    public void animateTo(ArrayList<Item> items){
-        applyAndAnimateRemovals(items);
-        applyAndAnimateAdditions(items);
-        applyAndAnimateMovedItems(items);
-    }
-    private void applyAndAnimateAdditions(ArrayList<Item> items) {
-        for (int i = 0, count = items.size(); i < count; i++) {
-            final Item item = items.get(i);
-            if (!itemsList.contains(item)) {
-                addItem(i, item);
-            }
-        }
-    }
-    private void applyAndAnimateRemovals(ArrayList<Item> items) {
-        for (int i = itemsList.size() - 1; i >= 0; i--) {
-            final Item item = itemsList.get(i);
-            if (!items.contains(item)) {
-                removeItem(i);
-            }
-        }
-    }
-    private void applyAndAnimateMovedItems(ArrayList<Item> items) {
-        for (int toPosition = items.size() - 1; toPosition >= 0; toPosition--) {
-            final Item item = items.get(toPosition);
-            final int fromPosition = itemsList.indexOf(item);
-            if (fromPosition >= 0 && fromPosition != toPosition) {
-                moveItem(fromPosition, toPosition);
-            }
-        }
-    }
-
-    private Item removeItem(int position) {
-        final Item item = itemsList.remove(position);
-        notifyItemRemoved(position);
-        return item;
-    }
     public void removeItemAnimated(final View view, final int position) {
         AnimationAlgorithms.setAnimationRemoval(view, context).setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -140,6 +104,60 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         }
         return -1;
     }
+    public Item getItemAtPos(int position){ return itemsList.get(position); }
+    public double getTotalCost(){
+        double totalCost = 0.0;
+        for(Item item : itemsList){
+            totalCost += item.getCost();
+        }
+        return totalCost;
+    }
+    public void animateTo(ArrayList<Item> items){
+        applyAndAnimateRemovals(items);
+        applyAndAnimateAdditions(items);
+        applyAndAnimateMovedItems(items);
+    }
+
+    private void applyAndAnimateAdditions(ArrayList<Item> items) {
+        for (int i = 0, count = items.size(); i < count; i++) {
+            final Item item = items.get(i);
+            if (!itemsList.contains(item)) {
+                addItem(i, item);
+            }
+        }
+    }
+    private void applyAndAnimateRemovals(ArrayList<Item> items) {
+        for (int i = itemsList.size() - 1; i >= 0; i--) {
+            final Item item = itemsList.get(i);
+            if (!items.contains(item)) {
+                removeItem(i);
+            }
+        }
+    }
+    private void applyAndAnimateMovedItems(ArrayList<Item> items) {
+        for (int toPosition = items.size() - 1; toPosition >= 0; toPosition--) {
+            final Item item = items.get(toPosition);
+            final int fromPosition = itemsList.indexOf(item);
+            if (fromPosition >= 0 && fromPosition != toPosition) {
+                moveItem(fromPosition, toPosition);
+            }
+        }
+    }
+
+    private Item removeItem(int position) {
+        final Item item = itemsList.remove(position);
+        notifyItemRemoved(position);
+        return item;
+    }
+    private void addItem(int position, Item item) {
+        itemsList.add(position, item);
+        notifyItemInserted(position);
+    }
+    private void moveItem(int fromPosition, int toPosition) {
+        final Item item = itemsList.remove(fromPosition);
+        itemsList.add(toPosition, item);
+        notifyItemMoved(fromPosition, toPosition);
+    }
 
     public static int getPositionSorted(ArrayList<Item> items, int left, int right, Item item) {
         if(right == -1) return 0;
@@ -155,23 +173,4 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             return getPositionSorted(items,left,left+(right-left)/2,item);
         }else return -1;
     }
-    public Item getItemAtPos(int position){ return itemsList.get(position); }
-    public double getTotalCost(){
-        double totalCost = 0.0;
-        for(Item item : itemsList){
-            totalCost += item.getCost();
-        }
-        return totalCost;
-    }
-
-    private void addItem(int position, Item item) {
-        itemsList.add(position, item);
-        notifyItemInserted(position);
-    }
-    private void moveItem(int fromPosition, int toPosition) {
-        final Item item = itemsList.remove(fromPosition);
-        itemsList.add(toPosition, item);
-        notifyItemMoved(fromPosition, toPosition);
-    }
-
 }

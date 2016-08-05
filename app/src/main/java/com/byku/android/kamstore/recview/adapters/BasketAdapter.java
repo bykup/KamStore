@@ -12,16 +12,9 @@ import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
 
-/**
- * Created by Byku on 05.08.2016.
- */
 public class BasketAdapter extends ItemAdapter{
 
-
-
-    public BasketAdapter(Context context, ArrayList<Item> itemsList){
-        super(context, itemsList);
-    }
+    public BasketAdapter(Context context, ArrayList<Item> itemsList){ super(context, itemsList); }
 
     public class BkHolder extends MyViewHolder{
         public TextView name, desc, cost;
@@ -32,8 +25,8 @@ public class BasketAdapter extends ItemAdapter{
             name = (TextView) view.findViewById(R.id.basket_name);
             desc = (TextView) view.findViewById(R.id.basket_desc);
             cost = (TextView) view.findViewById(R.id.basket_price);
-            del = (TextView) view.findViewById(R.id.basket_delete);
             relativeLayout = (RelativeLayout) view.findViewById(R.id.in_basket_list);
+            del = (TextView) view.findViewById(R.id.basket_delete);
 
             del.setOnClickListener(new View.OnClickListener() {
                 @Override
