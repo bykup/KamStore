@@ -16,49 +16,63 @@ import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
 
-/**
- * Need to
- * Override
- * onCreateViewHolder
- * onBindViewHolde
- * and extend:
- * MyViewHolder
- */
+public class tempShopAdapter extends RecyclerView.Adapter<tempShopAdapter.MyViewHolder>{
+    private final LayoutInflater itemInfalter;
+    private ArrayList<Item> itemsList;
+    private Context context;
+    private boolean ifRemoving = false;
+    /**
+     * ifRemoving - protects the base from removing more than one item at a time, used in:
+     * {@link #removeItemAnimated(View, int)}
+     */
 
-public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
-    protected final LayoutInflater itemInflater;
-    protected ArrayList<Item> itemsList;
-    protected Context context;
-    protected boolean ifRemoving = false;
-
-    protected OnItemClickListener listener;
-    public interface OnItemClickListener { void onItemClick(View itemView, int position); }
-    public void setOnItemClickListener(OnItemClickListener listener) { this.listener = listener; }
-
-    public ItemAdapter(Context context, ArrayList<Item> itemsList){
-        itemInflater = LayoutInflater.from(context);
-        this.itemsList = new ArrayList<>(itemsList);
+    public tempShopAdapter(Context context, ArrayList<Item> itemsList){
+        itemInfalter = LayoutInflater.from(context);
+        this.itemsList = new ArrayList<Item>(itemsList);
         this.context = context;
     }
 
-    public abstract class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder{
+        public TextView name, desc, cost;
+        public RelativeLayout relativeLayout;
         public MyViewHolder(View view){
             super(view);
+            name = (TextView) view.findViewById(R.id.shop_name);
+            desc = (TextView) view.findViewById(R.id.shop_desc);
+            cost = (TextView) view.findViewById(R.id.shop_price);
+            relativeLayout = (RelativeLayout) view.findViewById(R.id.in_store_list);
         }
     }
 
     @Override
-    public abstract MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        final View itemView = itemInfalter.inflate(R.layout.shop_items,parent,false);
+        return new MyViewHolder(itemView);
+    }
 
     @Override
-    public abstract void onBindViewHolder(MyViewHolder holder, int position);
+    public void onBindViewHolder(MyViewHolder holder, int position){
+        Item item = itemsList.get(position);
+        holder.name.setText(item.getName());
+        holder.desc.setText(item.getDesc());
+        holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
+        AnimationAlgorithms.setAnimationAddition(holder.relativeLayout,context);
+    }
 
     @Override
-    public abstract void onViewDetachedFromWindow(final ItemAdapter.MyViewHolder holder);
+    public void onViewDetachedFromWindow(final tempShopAdapter.MyViewHolder holder){ holder.relativeLayout.clearAnimation(); }
 
     @Override
     public int getItemCount(){ return itemsList.size(); }
 
+    public Item getItemAtPos(int position){ return itemsList.get(position); }
+    public double getTotalCost(){
+        double totalCost = 0.0;
+        for(Item item : itemsList){
+            totalCost += item.getCost();
+        }
+        return totalCost;
+    }
     public ArrayList<Item> getListCopy(){ return new ArrayList<Item>(itemsList); }
     public boolean getIfRemoving(){ return ifRemoving; }
 
@@ -66,7 +80,7 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         this.itemsList = new ArrayList<Item>(itemsList);
         notifyDataSetChanged();
     }
-    public void setIfRemoving(boolean item){ this.ifRemoving = item; }
+    public void setIfRemoving(boolean irem){ this.ifRemoving = irem; }
 
     public void animateTo(ArrayList<Item> items){
         applyAndAnimateRemovals(items);
@@ -155,14 +169,6 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             return getPositionSorted(items,left,left+(right-left)/2,item);
         }else return -1;
     }
-    public Item getItemAtPos(int position){ return itemsList.get(position); }
-    public double getTotalCost(){
-        double totalCost = 0.0;
-        for(Item item : itemsList){
-            totalCost += item.getCost();
-        }
-        return totalCost;
-    }
 
     private void addItem(int position, Item item) {
         itemsList.add(position, item);
@@ -173,5 +179,4 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         itemsList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
     }
-
 }

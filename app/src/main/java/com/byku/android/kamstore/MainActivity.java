@@ -32,7 +32,6 @@ import com.byku.android.kamstore.database.StoreDataSource;
 import com.byku.android.kamstore.recview.*;
 import com.byku.android.kamstore.recview.adapters.BasketAdapter;
 import com.byku.android.kamstore.recview.adapters.ItemAdapter;
-import com.byku.android.kamstore.recview.adapters.ShAdapter;
 import com.byku.android.kamstore.recview.adapters.ShopAdapter;
 
 public class MainActivity extends AppCompatActivity{
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity{
     private TextView basketQuantity;
 
     private ItemAdapter shopAdapter;
-    private BasketAdapter basketAdapter;
+    private ItemAdapter basketAdapter;
     private ArrayList<Item> itemsShop;
     private ArrayList<Item> itemsBasket = new ArrayList<>();
 
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        shopAdapter = new ShAdapter(this, itemsShop);
+        shopAdapter = new ShopAdapter(this, itemsShop);
         recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
@@ -304,7 +303,7 @@ public class MainActivity extends AppCompatActivity{
                 number = sbnr.toString();
                 item = new Item(string, string, Double.parseDouble(number));
 
-                int pos = ShopAdapter.getPositionSorted(items, 0, items.size()-1, item);
+                int pos = ItemAdapter.getPositionSorted(items, 0, items.size()-1, item);
                 if(pos != -1) items.add(pos, item);
 
             }

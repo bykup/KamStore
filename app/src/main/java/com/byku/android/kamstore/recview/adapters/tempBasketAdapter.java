@@ -16,49 +16,78 @@ import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
 
-/**
- * Need to
- * Override
- * onCreateViewHolder
- * onBindViewHolde
- * and extend:
- * MyViewHolder
- */
-
-public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
-    protected final LayoutInflater itemInflater;
-    protected ArrayList<Item> itemsList;
-    protected Context context;
-    protected boolean ifRemoving = false;
-
-    protected OnItemClickListener listener;
+public class tempBasketAdapter extends RecyclerView.Adapter<tempBasketAdapter.MyViewHolder>{
+    private final LayoutInflater itemInfalter;
+    private ArrayList<Item> itemsList;
+    private Context context;
+    private boolean ifRemoving = false;
+    /**
+     * ifRemoving - protects the base from removing more than one item at a time, used in:
+     * {@link #removeItemAnimated(View, int)}
+     */
+    private OnItemClickListener listener;
+    /**
+     * OnItemClickListener used to detect click on del(TextView)
+     */
     public interface OnItemClickListener { void onItemClick(View itemView, int position); }
     public void setOnItemClickListener(OnItemClickListener listener) { this.listener = listener; }
 
-    public ItemAdapter(Context context, ArrayList<Item> itemsList){
-        itemInflater = LayoutInflater.from(context);
-        this.itemsList = new ArrayList<>(itemsList);
+    public tempBasketAdapter(Context context, ArrayList<Item> itemsList){
+        itemInfalter = LayoutInflater.from(context);
+        this.itemsList = new ArrayList<Item>(itemsList);
         this.context = context;
     }
 
-    public abstract class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder{
+        public TextView name, desc, cost;
+        public RelativeLayout relativeLayout;
+        public TextView del;
         public MyViewHolder(View view){
             super(view);
+            name = (TextView) view.findViewById(R.id.basket_name);
+            desc = (TextView) view.findViewById(R.id.basket_desc);
+            cost = (TextView) view.findViewById(R.id.basket_price);
+            del = (TextView) view.findViewById(R.id.basket_delete);
+            relativeLayout = (RelativeLayout) view.findViewById(R.id.in_basket_list);
+
+            del.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null)
+                        listener.onItemClick(itemView, getLayoutPosition());
+                }
+            });
         }
     }
 
     @Override
-    public abstract MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        final View itemView = itemInfalter.inflate(R.layout.basket_items,parent,false);
+        return new MyViewHolder(itemView);
+    }
 
     @Override
-    public abstract void onBindViewHolder(MyViewHolder holder, int position);
+    public void onBindViewHolder(MyViewHolder holder, int position){
+        Item item = itemsList.get(position);
+        holder.name.setText(item.getName());
+        holder.desc.setText(item.getDesc());
+        holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
+        AnimationAlgorithms.setAnimationAddition(holder.relativeLayout,context);
+    }
 
     @Override
-    public abstract void onViewDetachedFromWindow(final ItemAdapter.MyViewHolder holder);
+    public void onViewDetachedFromWindow(final tempBasketAdapter.MyViewHolder holder){ holder.relativeLayout.clearAnimation(); }
 
     @Override
     public int getItemCount(){ return itemsList.size(); }
-
+    public Item getItemAtPos(int position){ return itemsList.get(position); }
+    public double getTotalCost(){
+        double totalCost = 0.0;
+        for(Item item : itemsList){
+            totalCost += item.getCost();
+        }
+        return totalCost;
+    }
     public ArrayList<Item> getListCopy(){ return new ArrayList<Item>(itemsList); }
     public boolean getIfRemoving(){ return ifRemoving; }
 
@@ -66,7 +95,7 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         this.itemsList = new ArrayList<Item>(itemsList);
         notifyDataSetChanged();
     }
-    public void setIfRemoving(boolean item){ this.ifRemoving = item; }
+    public void setIfRemoving(boolean irem){ this.ifRemoving = irem; }
 
     public void animateTo(ArrayList<Item> items){
         applyAndAnimateRemovals(items);
@@ -99,7 +128,7 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         }
     }
 
-    private Item removeItem(int position) {
+    public Item removeItem(int position) {
         final Item item = itemsList.remove(position);
         notifyItemRemoved(position);
         return item;
@@ -115,6 +144,7 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             public void onAnimationEnd(Animation animation) {
                 itemsList.remove(position);
                 notifyItemRemoved(position);
+                view.setClickable(true);
                 ifRemoving = false;
             }
 
@@ -123,17 +153,17 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             }
         });
     }
-    public int addItemSorted(Item item, ArrayList<Item> sourceArray){
+    public int addItemSorted(Item item ,ArrayList<Item> sourceArray){
         int pos = getPositionSorted(sourceArray,0,sourceArray.size()-1,item);
         if(pos == -1){
-            Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Blad - addItemSorted basket", Toast.LENGTH_SHORT).show();
             return -2;
         } else{
             sourceArray.add(pos,item);
         }
         pos = getPositionSorted(itemsList,0,itemsList.size()-1,item);
         if(pos == -1){
-            Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Blad - addItemSorted basket", Toast.LENGTH_SHORT).show();
         } else{
             itemsList.add(pos,item);
             notifyItemInserted(pos);
@@ -155,14 +185,6 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             return getPositionSorted(items,left,left+(right-left)/2,item);
         }else return -1;
     }
-    public Item getItemAtPos(int position){ return itemsList.get(position); }
-    public double getTotalCost(){
-        double totalCost = 0.0;
-        for(Item item : itemsList){
-            totalCost += item.getCost();
-        }
-        return totalCost;
-    }
 
     private void addItem(int position, Item item) {
         itemsList.add(position, item);
@@ -173,5 +195,4 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
         itemsList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
     }
-
 }
