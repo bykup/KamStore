@@ -12,9 +12,6 @@ import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
 
-/**
- * Created by Byku on 05.08.2016.
- */
 public class ShAdapter extends ItemAdapter {
 
     public ShAdapter(Context context, ArrayList<Item> itemsList){

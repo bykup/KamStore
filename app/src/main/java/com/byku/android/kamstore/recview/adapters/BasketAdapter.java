@@ -32,6 +32,12 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
     public interface OnItemClickListener { void onItemClick(View itemView, int position); }
     public void setOnItemClickListener(OnItemClickListener listener) { this.listener = listener; }
 
+    public BasketAdapter(Context context, ArrayList<Item> itemsList){
+        itemInfalter = LayoutInflater.from(context);
+        this.itemsList = new ArrayList<Item>(itemsList);
+        this.context = context;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
         public TextView name, desc, cost;
         public RelativeLayout relativeLayout;
@@ -71,12 +77,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
 
     @Override
     public void onViewDetachedFromWindow(final BasketAdapter.MyViewHolder holder){ holder.relativeLayout.clearAnimation(); }
-
-    public BasketAdapter(Context context, ArrayList<Item> itemsList){
-        itemInfalter = LayoutInflater.from(context);
-        this.itemsList = new ArrayList<Item>(itemsList);
-        this.context = context;
-    }
 
     @Override
     public int getItemCount(){ return itemsList.size(); }
@@ -154,7 +154,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
         });
     }
     public int addItemSorted(Item item ,ArrayList<Item> sourceArray){
-
         int pos = getPositionSorted(sourceArray,0,sourceArray.size()-1,item);
         if(pos == -1){
             Toast.makeText(context, "Blad - addItemSorted basket", Toast.LENGTH_SHORT).show();
@@ -186,7 +185,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
             return getPositionSorted(items,left,left+(right-left)/2,item);
         }else return -1;
     }
-
 
     private void addItem(int position, Item item) {
         itemsList.add(position, item);

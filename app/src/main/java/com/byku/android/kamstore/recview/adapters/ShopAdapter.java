@@ -60,9 +60,7 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
     }
 
     @Override
-    public void onViewDetachedFromWindow(final ShopAdapter.MyViewHolder holder){
-        holder.relativeLayout.clearAnimation();
-    }
+    public void onViewDetachedFromWindow(final ShopAdapter.MyViewHolder holder){ holder.relativeLayout.clearAnimation(); }
 
     @Override
     public int getItemCount(){ return itemsList.size(); }

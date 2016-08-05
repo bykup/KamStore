@@ -40,7 +40,6 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
     public abstract class MyViewHolder extends RecyclerView.ViewHolder{
         public MyViewHolder(View view){
             super(view);
-
         }
     }
 
@@ -152,6 +151,7 @@ public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyVie
             return getPositionSorted(items,left,left+(right-left)/2,item);
         }else return -1;
     }
+    public Item getItemAtPos(int position){ return itemsList.get(position); }
 
     private void addItem(int position, Item item) {
         itemsList.add(position, item);

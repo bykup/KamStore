@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +31,8 @@ import com.byku.android.kamstore.database.DatabaseService;
 import com.byku.android.kamstore.database.StoreDataSource;
 import com.byku.android.kamstore.recview.*;
 import com.byku.android.kamstore.recview.adapters.BasketAdapter;
+import com.byku.android.kamstore.recview.adapters.ItemAdapter;
+import com.byku.android.kamstore.recview.adapters.ShAdapter;
 import com.byku.android.kamstore.recview.adapters.ShopAdapter;
 
 public class MainActivity extends AppCompatActivity{
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity{
     private TextView basketStatus;
     private TextView basketQuantity;
 
-    private ShopAdapter shopAdapter;
+    private ItemAdapter shopAdapter;
     private BasketAdapter basketAdapter;
     private ArrayList<Item> itemsShop;
     private ArrayList<Item> itemsBasket = new ArrayList<>();
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        shopAdapter = new ShopAdapter(this, itemsShop);
+        shopAdapter = new ShAdapter(this, itemsShop);
         recViewShop.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recViewShop.setItemAnimator(new DefaultItemAnimator());
         recViewShop.addItemDecoration(new DividerItemDecoration(this,LinearLayoutManager.VERTICAL));
