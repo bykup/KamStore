@@ -288,7 +288,6 @@ public class MainActivity extends AppCompatActivity{
             char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
             char[] numbers = "1234567890".toCharArray();
             Random random = new Random();
-            Log.i("LOG","TEST SZYBKOSCI");
             for(int i =0; i < 11; i++){
                 sbch = new StringBuilder();
                 for (int j = 0; j < 5; j++) {
@@ -303,24 +302,11 @@ public class MainActivity extends AppCompatActivity{
                 string = sbch.toString();
                 number = sbnr.toString();
                 item = new Item(string, string, Double.parseDouble(number));
-                //int j=0, itemsSourceSize = items.size();
 
                 int pos = ShopAdapter.getPositionSorted(items, 0, items.size()-1, item);
                 if(pos != -1) items.add(pos, item);
-                /*if(!items.contains(item)){
-                    while(j <= itemsSourceSize){
-                        if(j != itemsSourceSize && items.get(j).compareTo(item) > 0) {
-                            items.add(j, item);
-                            break;
-                        } else if(j==itemsSourceSize){
-                            items.add(item);
-                            break;
-                        }
-                        j++;
-                    }
-                }//*/
+
             }
-            Log.i("LOG","TEST SZYBKOSCI KONIEC");
             return null;
         }
         @Override

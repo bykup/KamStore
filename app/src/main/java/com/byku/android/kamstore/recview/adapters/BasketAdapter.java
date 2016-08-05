@@ -169,34 +169,6 @@ public class BasketAdapter extends RecyclerView.Adapter<BasketAdapter.MyViewHold
             itemsList.add(pos,item);
             notifyItemInserted(pos);
         }
-
-        /*int i = 0,j=0, itemsSourceSize = sourceArray.size(), itemsListSize = itemsList.size();
-        if(sourceArray.contains(item)){
-            Toast.makeText(context, "Produkt już w sklepie", Toast.LENGTH_SHORT).show();
-            return -2;
-        }
-        while(j <= itemsSourceSize){
-            if(j != itemsSourceSize && sourceArray.get(j).compareTo(item) > 0) {
-                sourceArray.add(j, item);
-                break;
-            } else if(j==itemsSourceSize){
-                sourceArray.add(item);
-                break;
-            }
-            j++;
-        }
-        while(i <= itemsListSize){
-            if(i != itemsListSize && itemsList.get(i).compareTo(item) > 0) {
-                itemsList.add(i, item);
-                notifyItemInserted(i);
-                return i;
-            }else if(i==itemsListSize) {
-                itemsList.add(item);
-                notifyItemInserted(i);
-                return i;
-            }
-            i++;
-        }//*/
         return -1;
     }
 

@@ -16,73 +16,54 @@ import com.byku.android.kamstore.recview.Item;
 
 import java.util.ArrayList;
 
-public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
-    private final LayoutInflater itemInfalter;
-    private ArrayList<Item> itemsList;
-    private Context context;
-    private boolean ifRemoving = false;
-    /**
-     * ifRemoving - protects the base from removing more than one item at a time, used in:
-     * {@link #removeItemAnimated(View, int)}
-     */
+/**
+ * Need to
+ * Override
+ * onCreateViewHolder
+ * onBindViewHolde
+ * and extend:
+ * MyViewHolder
+ */
 
-    public ShopAdapter(Context context, ArrayList<Item> itemsList){
-        itemInfalter = LayoutInflater.from(context);
-        this.itemsList = new ArrayList<Item>(itemsList);
+public abstract class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
+    protected final LayoutInflater itemInflater;
+    protected ArrayList<Item> itemsList;
+    protected Context context;
+    protected boolean ifRemoving = false;
+
+    public ItemAdapter(Context context, ArrayList<Item> itemsList){
+        itemInflater = LayoutInflater.from(context);
+        this.itemsList = new ArrayList<>(itemsList);
         this.context = context;
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
-        public TextView name, desc, cost;
-        public RelativeLayout relativeLayout;
+    public abstract class MyViewHolder extends RecyclerView.ViewHolder{
         public MyViewHolder(View view){
             super(view);
-            name = (TextView) view.findViewById(R.id.shop_name);
-            desc = (TextView) view.findViewById(R.id.shop_desc);
-            cost = (TextView) view.findViewById(R.id.shop_price);
-            relativeLayout = (RelativeLayout) view.findViewById(R.id.in_store_list);
+
         }
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
-        final View itemView = itemInfalter.inflate(R.layout.shop_items,parent,false);
-        return new MyViewHolder(itemView);
-    }
+    public abstract MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position){
-        Item item = itemsList.get(position);
-        holder.name.setText(item.getName());
-        holder.desc.setText(item.getDesc());
-        holder.cost.setText(String.format("%.2f",item.getCost())+" zł");
-        AnimationAlgorithms.setAnimationAddition(holder.relativeLayout,context);
-    }
+    public abstract void onBindViewHolder(MyViewHolder holder, int position);
 
     @Override
-    public void onViewDetachedFromWindow(final ShopAdapter.MyViewHolder holder){
-        holder.relativeLayout.clearAnimation();
-    }
+    public abstract void onViewDetachedFromWindow(final ItemAdapter.MyViewHolder holder);
 
     @Override
     public int getItemCount(){ return itemsList.size(); }
 
-    public Item getItemAtPos(int position){ return itemsList.get(position); }
-    public double getTotalCost(){
-        double totalCost = 0.0;
-        for(Item item : itemsList){
-            totalCost += item.getCost();
-        }
-        return totalCost;
-    }
     public ArrayList<Item> getListCopy(){ return new ArrayList<Item>(itemsList); }
     public boolean getIfRemoving(){ return ifRemoving; }
 
     public void setItemList(ArrayList<Item> itemsList) {
         this.itemsList = new ArrayList<Item>(itemsList);
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
-    public void setIfRemoving(boolean irem){ this.ifRemoving = irem; }
+    public void setIfRemoving(boolean item){ this.ifRemoving = item; }
 
     public void animateTo(ArrayList<Item> items){
         applyAndAnimateRemovals(items);
@@ -181,4 +162,5 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.MyViewHolder>{
         itemsList.add(toPosition, item);
         notifyItemMoved(fromPosition, toPosition);
     }
+
 }
