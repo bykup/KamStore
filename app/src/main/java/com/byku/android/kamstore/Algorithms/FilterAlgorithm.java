@@ -18,5 +18,4 @@ public class FilterAlgorithm {
         }
         return filteredItemList;
     }
-
 }

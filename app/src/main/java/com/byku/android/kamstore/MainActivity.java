@@ -24,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.byku.android.kamstore.algorithms.*;
 import com.byku.android.kamstore.database.DatabaseService;
@@ -36,12 +35,8 @@ import com.byku.android.kamstore.recview.adapters.ShopAdapter;
 
 public class MainActivity extends AppCompatActivity{
     private StoreDataSource dataSource;
-    /**
-     * Protects from generating items more that once in the background
-     * Used in
-     * {@link MainActivity.generateItems(AsyncTask)}
-     */
-    private boolean ifGeneratingItems = false;
+
+    ItemArrayGenerator iArratGeneerator;
 
     private RecyclerView recViewShop;
     private RecyclerView recViewBasket;
@@ -187,7 +182,7 @@ public class MainActivity extends AppCompatActivity{
             case R.id.test:
                 if(itemsBasket.size() != 0){
                     Toast.makeText(MainActivity.this, "Nie można generować bazy gdy koszyk posiada produkty.", Toast.LENGTH_SHORT).show();
-                }else if(ifGeneratingItems){
+                }else if(iArratGeneerator != null && iArratGeneerator.getStatus() != AsyncTask.Status.FINISHED){
                     Toast.makeText(MainActivity.this, "Baza w trakcie generowania.", Toast.LENGTH_SHORT).show();
                 }else if(DatabaseService.getIfRunning()){
                     Toast.makeText(MainActivity.this, "Baza w trakcie zapisywania.", Toast.LENGTH_SHORT).show();
@@ -267,59 +262,10 @@ public class MainActivity extends AppCompatActivity{
 
     private void generateDatabase(){
         itemsShop.clear();
-        new generateItems(this).execute("");
-    }
-
-    private class generateItems extends AsyncTask<String, Integer, Long> {
-
-        ArrayList<Item> items = new ArrayList<Item>();
-        Context context;
-
-        generateItems(Context context){
-            this.context = context;
-        }
-
-        @Override
-        protected Long doInBackground(String... urls) {
-            ifGeneratingItems = true;
-            Item item;
-            String string, number;
-            StringBuilder sbch, sbnr;
-            char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-            char[] numbers = "1234567890".toCharArray();
-            Random random = new Random();
-            for(int i =0; i < 11; i++){
-                sbch = new StringBuilder();
-                for (int j = 0; j < 5; j++) {
-                    char c = chars[random.nextInt(chars.length)];
-                    sbch.append(c);
-                }
-                sbnr = new StringBuilder();
-                for (int j = 0; j < 4; j++) {
-                    char c = numbers[random.nextInt(numbers.length)];
-                    sbnr.append(c);
-                }
-                string = sbch.toString();
-                number = sbnr.toString();
-                item = new Item(string, string, Double.parseDouble(number));
-
-                int pos = ItemAdapter.getPositionSorted(items, 0, items.size()-1, item);
-                if(pos != -1) items.add(pos, item);
-
-            }
-            return null;
-        }
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-        }
-        @Override
-        protected void onPostExecute(Long result) {
-            shopAdapter.setItemList(this.items);
-            itemsShop = this.items;
-            ifGeneratingItems= false;
-            Intent intent = new Intent(context,DatabaseService.class);
-            intent.putParcelableArrayListExtra(DatabaseService.DATABASE,itemsShop);
-            getApplicationContext().startService(intent);
-        }
+        //new generateItems(this).execute("");
+        iArratGeneerator = new ItemArrayGenerator(this, shopAdapter, itemsShop,1000);
+        iArratGeneerator.execute("");
     }
 }
+
+
